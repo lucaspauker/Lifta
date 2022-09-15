@@ -42,7 +42,7 @@ const gs = {
   pageContainer: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "start",
+    justifyContent: "flex-start",
     padding: 10,
     color: 'white',
     backgroundColor: backgroundColor,
@@ -105,7 +105,6 @@ const gs = {
   buttons: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'top',
     justifyContent: 'space-around',
     marginLeft: 10,
     marginRight: 10,

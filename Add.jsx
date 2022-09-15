@@ -2,7 +2,6 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
 //import {Picker} from '@react-native-picker/picker';
-import RNPickerSelect from 'react-native-picker-select';
 import { db, auth } from './database/firebase';
 import { doc, collection, addDoc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -46,6 +45,7 @@ class Add extends React.Component {
 
   submit = () => {
     console.log("Writing data");
+    console.log(this.state.data);
     let title = this.state.title;
     if (title === '') title = "Workout";
     addDoc(collection(db, 'workouts'), {
@@ -75,7 +75,7 @@ class Add extends React.Component {
 
   render() {
     return (
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps='handled'>
         <View style={gs.pageContainer}>
           <Text style={gs.pageHeader}>
             Add Workout

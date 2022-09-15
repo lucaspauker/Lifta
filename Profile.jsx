@@ -8,31 +8,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TabBar, TabView, SceneMap } from 'react-native-tab-view';
 
 import gs from './globalStyles.js';
+import {toTitleCase, convertTimestamp, formatBigNumber} from './utils.js';
 import Loading from './Loading';
-
-function convertTimestamp(t) {
-  let a = new Date(t);
-  let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  let day = days[a.getDay()];
-  let localeString = a.toLocaleString('en-US');
-  let date = localeString.split(',')[0];
-  let time = localeString.split(',')[1];
-  let firstTime = time.split(':').slice(0, 2).join(':');
-  let lastTime = time.split(' ')[2];
-  return day + ', ' + date + ' @ ' + firstTime + ' ' + lastTime;
-}
-
-function formatBigNumber(n) {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-const workoutCodes = {
-  "squat": "Squat",
-  "bench": "Bench",
-  "deadlift": "Deadlift",
-  "ohp": "Overhead Press",
-  "": "No name",
-}
 
 class ProfileCard extends React.Component {
   constructor(props) {
@@ -71,7 +48,7 @@ class ProfileCard extends React.Component {
             <View key={i}>
               <View style={gs.workout}>
                 <Text style={gs.workoutTitle}>
-                  {workoutCodes[workout.workout]}
+                  {toTitleCase(workout.workout)}
                 </Text>
                 <Text style={gs.workoutBody}>
                   {workout.sets}x{workout.reps}@{workout.weight}lb
@@ -174,6 +151,7 @@ class ProfileWorkouts extends React.Component {
 class ProfileSettings extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props.params);
     this.state = {
       firstname: '',
       lastname: '',
@@ -190,15 +168,6 @@ class ProfileSettings extends React.Component {
 
   editProfile = () => {
     this.props.navigation.navigate('EditProfile');
-  }
-
-  updateProfile = (firstname, lastname, email) => {
-    this.setState({
-      firstname: firstname,
-      lastname: lastname,
-      email: email,
-      isLoading: false
-    });
   }
 
   componentDidMount() {
@@ -273,13 +242,7 @@ const renderTabBar = props => (
   />
 );
 
-const renderScene = SceneMap({
-  first: () => <ProfileWorkouts />,
-  second: () => <ProfileSettings />,
-});
-
-
-function Profile({navigation}) {
+function Profile({route, navigation}) {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'first', title: 'Workouts' },
@@ -293,7 +256,7 @@ function Profile({navigation}) {
       renderScene={
         SceneMap({
           first: () => <ProfileWorkouts navigation={navigation}/>,
-          second: () => <ProfileSettings navigation={navigation}/>,
+          second: () => <ProfileSettings navigation={navigation} params={route.params}/>,
         })
       }
       renderTabBar={renderTabBar}

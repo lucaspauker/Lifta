@@ -64,7 +64,7 @@ class EditWorkout extends React.Component {
         indices: [this.state.lastIndex + 1],
         lastIndex: this.state.lastIndex + 1,
       });
-      this.props.navigation.goBack();
+      this.props.navigation.navigate('Profile', {});
     });
   }
 

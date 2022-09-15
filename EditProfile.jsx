@@ -12,7 +12,6 @@ class EditProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
       firstname: '',
       lastname: '',
       isLoading: true,
@@ -23,11 +22,10 @@ class EditProfile extends React.Component {
     console.log("Edit profile");
     //this.state.updateProfile(this.state.email, this.state.firstname, this.state.lastname);
     updateDoc(doc(db, 'users', auth.currentUser.uid), {
-      email: this.state.email,
       firstname: this.state.firstname,
       lastname: this.state.lastname,
     }).then(() => {
-      this.props.navigation.goBack();
+      this.props.navigation.navigate('Profile', {});
     });
   }
 
@@ -74,16 +72,6 @@ class EditProfile extends React.Component {
               onChangeText={(val) => this.updateInputVal(val, 'lastname')}
               value={this.state.lastname}
               placeholder="Last Name"
-              placeholderTextColor={gs.textSecondaryColor}
-            />
-          </View>
-          <View style={styles.box}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={[styles.input]}
-              onChangeText={(val) => this.updateInputVal(val, 'email')}
-              value={this.state.email}
-              placeholder="Email"
               placeholderTextColor={gs.textSecondaryColor}
             />
           </View>

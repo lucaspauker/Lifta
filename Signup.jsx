@@ -1,6 +1,6 @@
 // components/signup.js
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { db, auth, provider } from './database/firebase';
 import { doc, collection, addDoc, setDoc } from 'firebase/firestore';
@@ -19,6 +19,7 @@ class Signup extends Component {
       lastname: '',
       isLoading: false
     }
+    this.inputs = {};
   }
 
   updateInputVal = (val, prop) => {
@@ -29,7 +30,6 @@ class Signup extends Component {
 
   registerUser = () => {
     if (this.state.email === '' && this.state.password === '') {
-      Alert.alert('Enter details to signup!')
     } else {
       this.setState({ isLoading: true, });
       createUserWithEmailAndPassword(auth, this.state.email, this.state.password)
@@ -60,6 +60,10 @@ class Signup extends Component {
     }
   }
 
+  focusNextField = (id) => {
+    this.inputs[id].focus();
+  }
+
   render() {
     if(this.state.isLoading){
       return(
@@ -78,57 +82,99 @@ class Signup extends Component {
           </Text>
           <Ionicons name="barbell-outline" size={50} style={styles.barbell}/>
         </View>
-        <Text
-          style={styles.errorText}>
-          {this.state.errorMessage}
-        </Text>
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Username"
-          placeholderTextColor={gs.textSecondaryColor}
-          value={this.state.displayName}
-          onChangeText={(val) => this.updateInputVal(val, 'displayName')}
-        />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="First name"
-          placeholderTextColor={gs.textSecondaryColor}
-          value={this.state.firstname}
-          onChangeText={(val) => this.updateInputVal(val, 'firstname')}
-        />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Last name"
-          placeholderTextColor={gs.textSecondaryColor}
-          value={this.state.lastname}
-          onChangeText={(val) => this.updateInputVal(val, 'lastname')}
-        />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Email"
-          placeholderTextColor={gs.textSecondaryColor}
-          value={this.state.email}
-          onChangeText={(val) => this.updateInputVal(val, 'email')}
-        />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Password"
-          placeholderTextColor={gs.textSecondaryColor}
-          value={this.state.password}
-          onChangeText={(val) => this.updateInputVal(val, 'password')}
-          maxLength={15}
-          secureTextEntry={true}
-        />
-        <Button
-          color={gs.textColor}
-          title="Sign Up"
-          onPress={() => this.registerUser()}
-        />
-        <Text
-          style={styles.loginText}
-          onPress={() => this.props.navigation.replace('Login')}>
-          Already Registered? Click here to login
-        </Text>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+          <Text
+            style={styles.errorText}>
+            {this.state.errorMessage}
+          </Text>
+          <TextInput
+            returnKeyType={ "next" }
+            blurOnSubmit={ false }
+            onSubmitEditing={() => {
+              this.focusNextField('firstname');
+            }}
+            ref={ input => {
+              this.inputs['username'] = input;
+            }}
+            style={styles.inputStyle}
+            placeholder="Username"
+            placeholderTextColor={gs.textSecondaryColor}
+            value={this.state.displayName}
+            onChangeText={(val) => this.updateInputVal(val, 'displayName')}
+          />
+          <TextInput
+            returnKeyType={ "next" }
+            blurOnSubmit={ false }
+            onSubmitEditing={() => {
+              this.focusNextField('lastname');
+            }}
+            ref={ input => {
+              this.inputs['firstname'] = input;
+            }}
+            style={styles.inputStyle}
+            placeholder="First name"
+            placeholderTextColor={gs.textSecondaryColor}
+            value={this.state.firstname}
+            onChangeText={(val) => this.updateInputVal(val, 'firstname')}
+          />
+          <TextInput
+            returnKeyType={ "next" }
+            blurOnSubmit={ false }
+            onSubmitEditing={() => {
+              this.focusNextField('email');
+            }}
+            ref={ input => {
+              this.inputs['lastname'] = input;
+            }}
+            style={styles.inputStyle}
+            placeholder="Last name"
+            placeholderTextColor={gs.textSecondaryColor}
+            value={this.state.lastname}
+            onChangeText={(val) => this.updateInputVal(val, 'lastname')}
+          />
+          <TextInput
+            returnKeyType={ "next" }
+            blurOnSubmit={ false }
+            onSubmitEditing={() => {
+              this.focusNextField('password');
+            }}
+            ref={ input => {
+              this.inputs['email'] = input;
+            }}
+            style={styles.inputStyle}
+            placeholder="Email"
+            placeholderTextColor={gs.textSecondaryColor}
+            value={this.state.email}
+            onChangeText={(val) => this.updateInputVal(val, 'email')}
+          />
+          <TextInput
+            returnKeyType={ "done" }
+            blurOnSubmit={ false }
+            onSubmitEditing={() => {
+              this.registerUser();
+            }}
+            ref={ input => {
+              this.inputs['password'] = input;
+            }}
+            style={styles.inputStyle}
+            placeholder="Password"
+            placeholderTextColor={gs.textSecondaryColor}
+            value={this.state.password}
+            onChangeText={(val) => this.updateInputVal(val, 'password')}
+            maxLength={15}
+            secureTextEntry={true}
+          />
+          <Button
+            color={gs.textColor}
+            title="Sign Up"
+            onPress={() => this.registerUser()}
+          />
+          <Text
+            style={styles.loginText}
+            onPress={() => this.props.navigation.replace('Login')}>
+            Already Registered? Click here to login
+          </Text>
+        </KeyboardAvoidingView>
       </View>
     );
   }

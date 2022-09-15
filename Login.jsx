@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, provider } from './database/firebase';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import Loading from './Loading';
 import gs from './globalStyles';
 
 export default class Login extends Component {
@@ -14,6 +15,7 @@ export default class Login extends Component {
       password: '',
       isLoading: false
     }
+    this.inputs = {};
   }
   updateInputVal = (val, prop) => {
     const state = this.state;
@@ -22,7 +24,6 @@ export default class Login extends Component {
   }
   userLogin = () => {
     if(this.state.email === '' && this.state.password === '') {
-      Alert.alert('Enter details to signin!')
     } else {
       this.setState({
         isLoading: true,
@@ -37,16 +38,19 @@ export default class Login extends Component {
           })
           this.props.navigation.replace('Home')
         })
-        .catch(error => this.setState({ errorMessage: error.message }))
+        .catch(error => this.setState({ isLoading: false, errorMessage: error.message }))
     }
   }
+
+  focusNextField = (id) => {
+    this.inputs[id].focus();
+  }
+
   render() {
     if(this.state.isLoading){
       return(
-        <View style={styles.preloader}>
-          <ActivityIndicator size="large" color="#9E9E9E"/>
-        </View>
-      )
+        <Loading />
+      );
     }
     return (
       <View style={gs.container}>
@@ -57,38 +61,56 @@ export default class Login extends Component {
           </Text>
           <Ionicons name="barbell-outline" size={50} style={styles.barbell}/>
         </View>
-        <Text
-          style={styles.errorText}>
-          {this.state.errorMessage}
-        </Text>
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Email"
-          placeholderTextColor={gs.textSecondaryColor}
-          value={this.state.email}
-          onChangeText={(val) => this.updateInputVal(val, 'email')}
-        />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Password"
-          placeholderTextColor={gs.textSecondaryColor}
-          value={this.state.password}
-          onChangeText={(val) => this.updateInputVal(val, 'password')}
-          maxLength={15}
-          secureTextEntry={true}
-        />
-        <View style={styles.button}>
-          <Button
-            color={gs.textColor}
-            title="Sign In"
-            onPress={() => this.userLogin()}
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+          <Text
+            style={styles.errorText}>
+            {this.state.errorMessage}
+          </Text>
+          <TextInput
+            returnKeyType={ "next" }
+            blurOnSubmit={ false }
+            onSubmitEditing={() => {
+              this.focusNextField('password');
+            }}
+            ref={ input => {
+              this.inputs['username'] = input;
+            }}
+            style={styles.inputStyle}
+            placeholder="Email"
+            placeholderTextColor={gs.textSecondaryColor}
+            value={this.state.email}
+            onChangeText={(val) => this.updateInputVal(val, 'email')}
           />
-        </View>
-        <Text
-          style={styles.loginText}
-          onPress={() => this.props.navigation.replace('Signup')}>
-          Don't have account? Click here to sign up.
-        </Text>
+          <TextInput
+            returnKeyType={ "done" }
+            blurOnSubmit={ false }
+            onSubmitEditing={() => {
+              this.userLogin()
+            }}
+            ref={ input => {
+              this.inputs['password'] = input;
+            }}
+            style={styles.inputStyle}
+            placeholder="Password"
+            placeholderTextColor={gs.textSecondaryColor}
+            value={this.state.password}
+            onChangeText={(val) => this.updateInputVal(val, 'password')}
+            maxLength={15}
+            secureTextEntry={true}
+          />
+          <View style={styles.button}>
+            <Button
+              color={gs.textColor}
+              title="Sign In"
+              onPress={() => this.userLogin()}
+            />
+          </View>
+          <Text
+            style={styles.loginText}
+            onPress={() => this.props.navigation.replace('Signup')}>
+            Don't have account? Click here to sign up.
+          </Text>
+        </KeyboardAvoidingView>
       </View>
     );
   }

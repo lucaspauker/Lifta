@@ -7,27 +7,8 @@ import { limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDo
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import gs from './globalStyles.js';
+import {toTitleCase, convertTimestamp} from './utils.js';
 import Loading from './Loading';
-
-function convertTimestamp(t) {
-  let a = new Date(t);
-  let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  let day = days[a.getDay()];
-  let localeString = a.toLocaleString('en-US');
-  let date = localeString.split(',')[0];
-  let time = localeString.split(',')[1];
-  let firstTime = time.split(':').slice(0, 2).join(':');
-  let lastTime = time.split(' ')[2];
-  return day + ', ' + date + ' @ ' + firstTime + ' ' + lastTime;
-}
-
-const workoutCodes = {
-  "squat": "Squat",
-  "bench": "Bench",
-  "deadlift": "Deadlift",
-  "ohp": "Overhead Press",
-  "": "No name",
-}
 
 class FeedCard extends React.Component {
   constructor(props) {
@@ -114,7 +95,7 @@ class FeedCard extends React.Component {
             <View key={i}>
               <View style={gs.workout}>
                 <Text style={gs.workoutTitle}>
-                  {workoutCodes[workout.workout]}
+                  {workout.workout ? toTitleCase(workout.workout) : 'Workout'}
                 </Text>
                 <Text style={gs.workoutBody}>
                   {workout.sets}x{workout.reps}@{workout.weight}lb

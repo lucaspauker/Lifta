@@ -49,12 +49,8 @@ function FeedNavigator() {
         name="Feed"
         component={Feed}
         options={{
-          unmountOnBlur: true,
           headerTitle: (props) => <Title {...props} />,
         }}
-        listeners={({ navigation }) => ({
-          blur: () => navigation.setParams({ screen: undefined }),
-        })}
       />
       <FeedStack.Screen
         name="UserPage"
@@ -78,12 +74,8 @@ function ProfileNavigator() {
         name="Profile"
         component={Profile}
         options={{
-          unmountOnBlur: true,
           headerTitle: (props) => <Title {...props} />,
         }}
-        listeners={({ navigation }) => ({
-          blur: () => navigation.setParams({ screen: undefined }),
-        })}
       />
       <ProfileStack.Screen
         name="EditWorkout"
@@ -135,7 +127,10 @@ function Home() {
       <Tab.Screen
         name="Feed"
         component={FeedNavigator}
-        options={{ headerShown: false }}
+        options={{ unmountOnBlur: true, headerShown: false }}
+        listeners={({ navigation }) => ({
+          blur: () => navigation.setParams({ screen: undefined }),
+        })}
       />
       <Tab.Screen
         name="Add"
@@ -147,7 +142,10 @@ function Home() {
       <Tab.Screen
         name="Profile"
         component={ProfileNavigator}
-        options={{ headerShown: false }}
+        options={{ unmountOnBlur: true, headerShown: false }}
+        listeners={({ navigation }) => ({
+          blur: () => navigation.setParams({ screen: undefined }),
+        })}
       />
     </Tab.Navigator>
   );
