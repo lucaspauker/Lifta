@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
 //import RNPickerSelect from 'react-native-picker-select';
-import { db, auth } from './database/firebase';
+import { db, auth } from '../database/firebase';
 import { doc, collection, addDoc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Autocomplete from 'react-native-autocomplete-input';

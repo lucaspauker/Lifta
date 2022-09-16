@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
-import { db, auth, provider } from './database/firebase';
+import { db, auth, provider } from '../database/firebase';
 import { limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -56,9 +56,11 @@ class Feed extends React.Component {
     return (
       <ScrollView>
         <View style={gs.pageContainer}>
-          <Text style={gs.pageHeader}>
-            Feed
-          </Text>
+          <View style={gs.pageHeaderBox}>
+            <Text style={gs.pageHeader}>
+              Feed
+            </Text>
+          </View>
           {this.state.data.map((item, i) => (
             <FeedCard key={i} item={item} reload={this.reload} navigation={this.props.navigation}/>
           ))}

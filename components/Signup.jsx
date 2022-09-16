@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { db, auth, provider } from './database/firebase';
+import { db, auth, provider } from '../database/firebase';
 import { doc, collection, addDoc, setDoc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 

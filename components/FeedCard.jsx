@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
-import { db, auth, provider } from './database/firebase';
+import { db, auth, provider } from '../database/firebase';
 import { limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 

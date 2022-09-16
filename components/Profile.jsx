@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
-import { db, auth, provider } from './database/firebase';
+import { db, auth, provider } from '../database/firebase';
 import {deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TabBar, TabView, SceneMap } from 'react-native-tab-view';

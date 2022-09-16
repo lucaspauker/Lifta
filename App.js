@@ -6,18 +6,18 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useFonts, Oswald_400Regular, } from '@expo-google-fonts/oswald';
 
-import Feed from './Feed';
+import Feed from './components/Feed';
 //import Search from './Search';
-import Add from './Add';
-import Splash from './Splash';
-import Signup from './Signup';
-import Login from './Login';
-import Profile from './Profile';
-import EditWorkout from './EditWorkout';
-import EditProfile from './EditProfile';
-import UserPage from './UserPage';
+import Add from './components/Add';
+import Splash from './components/Splash';
+import Signup from './components/Signup';
+import Login from './components/Login';
+import Profile from './components/Profile';
+import EditWorkout from './components/EditWorkout';
+import EditProfile from './components/EditProfile';
+import UserPage from './components/UserPage';
 
-import gs from './globalStyles.js';
+import gs from './components/globalStyles.js';
 
 const Tab = createBottomTabNavigator();
 

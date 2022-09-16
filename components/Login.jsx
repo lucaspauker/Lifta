@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, provider } from './database/firebase';
+import { auth, provider } from '../database/firebase';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Loading from './Loading';
