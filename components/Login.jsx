@@ -55,11 +55,19 @@ export default class Login extends Component {
     return (
       <View style={gs.container}>
         <View style={styles.header}>
-          <Ionicons name="barbell-outline" size={50} style={styles.barbell}/>
-          <Text style={gs.header}>
-            Lifta
+          <Text style={[gs.header, gs.noRightLetter]}>
+            L
           </Text>
-          <Ionicons name="barbell-outline" size={50} style={styles.barbell}/>
+          <Ionicons name="barbell-outline" size={35} style={gs.barbell}/>
+          <Text style={[gs.header, gs.noLeftLetter]}>
+            F
+          </Text>
+          <Text style={[gs.header, gs.normalLetter]}>
+            T
+          </Text>
+          <Text style={[gs.header, gs.normalLetter]}>
+            A
+          </Text>
         </View>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <Text
@@ -143,10 +151,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     textAlign: 'center',
-  },
-  barbell: {
-    margin: 20,
-    color: gs.textColor,
   },
   header: {
     width: '100%',

@@ -72,9 +72,11 @@ class EditWorkout extends React.Component {
     return (
       <ScrollView>
         <View style={gs.pageContainer}>
-          <Text style={gs.pageHeader}>
-            Edit Workout
-          </Text>
+          <View style={gs.pageHeaderBox}>
+            <Text style={gs.pageHeader}>
+              Edit workout
+            </Text>
+          </View>
           <TextInput
             style={[styles.input, styles.title]}
             onChangeText={(val) => this.updateInputVal(val, 'title')}

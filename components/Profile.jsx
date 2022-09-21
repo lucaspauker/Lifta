@@ -1,12 +1,14 @@
 import React from 'react';
-import { Dimensions, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
+import { RefreshControl, Dimensions, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
 import { db, auth, provider } from '../database/firebase';
 import {deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import { TabBar, TabView, SceneMap } from 'react-native-tab-view';
 
+import {wait} from './utils.js';
 import gs from './globalStyles.js';
 import {toTitleCase, convertTimestamp, formatBigNumber} from './utils.js';
 import Loading from './Loading';
@@ -36,36 +38,52 @@ class ProfileCard extends React.Component {
     const item = this.props.item;
     return (
       <Card key={item.timestamp} containerStyle={gs.card}>
-        <View style={gs.topsection}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.subtitle}>
-            <Ionicons name="barbell-outline" size={10} style={styles.titleText}/>
-            &nbsp;{convertTimestamp(item.timestamp)}
-          </Text>
-        </View>
-        <View style={gs.workouts}>
-          {Object.values(item.data).map((workout, i) => (
-            <View key={i}>
-              <View style={gs.workout}>
-                <Text style={gs.workoutTitle}>
-                  {toTitleCase(workout.workout)}
-                </Text>
-                <Text style={gs.workoutBody}>
-                  {workout.sets}x{workout.reps}@{workout.weight}lb
+        <View style={gs.leftright}>
+          <View style={gs.left}>
+            <View style={gs.topsection}>
+              <View style={gs.titlebar}>
+                {item.data[0] && item.data[0]["workout"] === "bench" ?
+                  <Icon name="chair" size={25} style={styles.titleText}/>
+                :
+                  <Ionicons name="barbell-outline" size={30} style={styles.titleText}/>
+                }
+                <Text style={gs.title}>
+                  {item.title}
                 </Text>
               </View>
-              {i < Object.values(item.data).length - 1 ? <View style={gs.divider}/> : ""}
+              <Text style={gs.subtitle}>
+                {convertTimestamp(item.timestamp)}
+              </Text>
+              {item.notes ? <Text style={gs.notes}>{item.notes}</Text> : ''}
             </View>
-          ))}
-          {item.notes ? <Text style={gs.notes}>{item.notes}</Text> : ''}
+          </View>
+          <View style={gs.right}>
+            <View style={gs.buttons}>
+              <TouchableOpacity style={gs.clearButton} onPress={() => {this.deleteEntry(item.key)}}>
+                <Ionicons name="trash-outline" size={36} color={gs.backgroundColor} />
+              </TouchableOpacity>
+              <TouchableOpacity style={gs.clearButton} onPress={() => {this.editEntry(item.key)}}>
+                <Ionicons name="create-outline" size={36} color={gs.backgroundColor} />
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-        <View style={gs.buttons}>
-          <TouchableOpacity style={gs.clearButton} onPress={() => {this.deleteEntry(item.key)}}>
-            <Ionicons name="trash-outline" size={20} color={gs.backgroundColor} />
-          </TouchableOpacity>
-          <TouchableOpacity style={gs.clearButton} onPress={() => {this.editEntry(item.key)}}>
-            <Ionicons name="create-outline" size={20} color={gs.backgroundColor} />
-          </TouchableOpacity>
+        <View style={gs.bottom}>
+          <View style={gs.workouts}>
+            {Object.values(item.data).map((workout, i) => (
+              <View key={i}>
+                <View style={gs.workout}>
+                  <Text style={gs.workoutTitle}>
+                    {toTitleCase(workout.workout)}
+                  </Text>
+                  <Text style={gs.workoutBody}>
+                    {workout.sets}x{workout.reps}@{workout.weight}lb
+                  </Text>
+                </View>
+                {i < Object.values(item.data).length - 1 ? <View style={gs.divider}/> : ""}
+              </View>
+            ))}
+          </View>
         </View>
       </Card>
     );
@@ -81,6 +99,7 @@ class ProfileWorkouts extends React.Component {
       data: [],
       totalWorkouts: 0,
       lbLifted: 0,
+      refreshing: false,
     };
   }
 
@@ -109,8 +128,14 @@ class ProfileWorkouts extends React.Component {
       });
       //console.log(data);
       data.sort((a, b) => b.timestamp - a.timestamp);
-      this.setState({data: data, isLoading: false, totalWorkouts: data.length, lbLifted: formatBigNumber(lbLifted)});
+      this.setState({data: data, isLoading: false, totalWorkouts: data.length, lbLifted: formatBigNumber(lbLifted), refreshing: false});
     });
+  }
+
+  onRefresh = () => {
+    this.setState({refreshing: true},
+      () => {wait(100).then(() => this.reload())}
+    );
   }
 
   componentDidMount() {
@@ -125,11 +150,19 @@ class ProfileWorkouts extends React.Component {
   render() {
     if (this.state.isLoading){
       return(
-        <Loading/>
+        <View/>
       );
     }
     return (
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+            tintColor='white'
+          />
+        }>
+        <View style={gs.dividerPink} />
         <View style={gs.pageContainer}>
           <View style={styles.stats}>
             <Text>
@@ -139,8 +172,12 @@ class ProfileWorkouts extends React.Component {
               Pounds lifted: {this.state.lbLifted}
             </Text>
           </View>
+          <View style={gs.dividerPink} />
           {this.state.data.map((item) => (
-            <ProfileCard item={item} reload={this.reload} navigation={this.props.navigation} key={item.key}/>
+            <View key={item.key}>
+              <ProfileCard item={item} reload={this.reload} navigation={this.props.navigation}/>
+              <View style={gs.dividerPink} />
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -296,6 +333,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 10,
+    marginBottom: 10,
   },
   title: {
     textAlign: 'left',

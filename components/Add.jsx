@@ -77,7 +77,7 @@ class Add extends React.Component {
       title: '',
       indices: [this.state.lastIndex + 1],
       lastIndex: this.state.lastIndex + 1,
-      Date: new Date(),
+      date: new Date(),
     });
   }
 
@@ -95,14 +95,16 @@ class Add extends React.Component {
             <Text style={gs.pageHeader}>
               Add a workout
             </Text>
-            <TouchableOpacity style={styles.headerButton} onPress={this.clear}>
-              <Text style={styles.headerButtonText}>
+            <TouchableOpacity style={gs.button} onPress={this.clear}>
+              <Text style={gs.buttonText}>
                 Clear
               </Text>
             </TouchableOpacity>
           </View>
+          <View style={gs.dividerPink} />
           <View style={styles.datetimeBox}>
             <RNDateTimePicker
+              themeVariant="light"
               mode="datetime"
               value={this.state.date}
               onChange={(e, val) => this.updateInputVal(val, 'date')}
@@ -119,20 +121,7 @@ class Add extends React.Component {
               placeholderTextColor={gs.textSecondaryColor}
             />
           </Card>
-          {this.state.indices.map((ind) =>
-            <AddCard key={ind} index={ind} updateCard={this.updateCard} deleteCard={this.deleteCard}/>
-          )}
-          <Button
-            icon={
-              <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
-            }
-            title=""
-            type="clear"
-            style={styles.clearButton}
-            color={gs.backgroundColor}
-            onPress={this.addExercise}
-          />
-          <Card containerStyle={[gs.card, styles.card]}>
+          <Card containerStyle={[gs.card, styles.card, styles.notesCard]}>
             <TextInput
               style={[styles.input, styles.notes]}
               onChangeText={(val) => this.updateInputVal(val, 'notes')}
@@ -142,12 +131,24 @@ class Add extends React.Component {
               placeholderTextColor={gs.textSecondaryColor}
             />
           </Card>
-          <Button
-            title="Save"
-            style={[gs.button, styles.button]}
-            color={gs.backgroundColor}
-            onPress={this.submit}
-          />
+          <View style={gs.dividerPink} />
+          {this.state.indices.map((ind) =>
+            <View key={ind}>
+              <AddCard index={ind} updateCard={this.updateCard} deleteCard={this.deleteCard}/>
+               <View style={gs.dividerPink} />
+            </View>
+          )}
+          <TouchableOpacity style={[gs.card, styles.plusCard]} onPress={this.addExercise}>
+            <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
+          </TouchableOpacity>
+          <View style={gs.dividerPink} />
+          <View style={gs.centerBox}>
+            <TouchableOpacity style={[gs.button, styles.saveButton]} onPress={this.submit}>
+              <Text style={gs.buttonText}>
+                Save
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     );
@@ -157,14 +158,19 @@ class Add extends React.Component {
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    borderWidth: 1,
     minWidth: 80,
     padding: 10,
     borderRadius: 5,
+    borderWidth: 0,
+    borderTopWidth: 0,
+  },
+  saveButton: {
+    marginTop: 10,
+    marginBottom: 10,
+    width: 100,
   },
   picker: {
     fontSize: 30,
-    borderWidth: 1,
     padding: 10,
     borderRadius: 5,
   },
@@ -183,24 +189,19 @@ const styles = StyleSheet.create({
   },
   button: {
   },
-  headerButton: {
-    marginTop: 0,
-    marginBottom: 0,
-    height: 30,
-    fontSize: 16,
-    borderWidth: 2,
-    borderColor: gs.primaryColor,
-    borderRadius: 10,
+  plusCard: {
+    paddingTop: 10,
+    paddingBottom: 10,
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
-  card: {
-    padding: 10,
   },
   titleCard: {
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  notesCard: {
     paddingTop: 5,
     paddingBottom: 5,
   },
@@ -222,11 +223,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'start',
     width: '100%',
+    paddingRight: 10,
   },
   datetime: {
     margin: 0,
     padding: 0,
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 10,
     width: '100%',
   },
   pageHeaderBox: {

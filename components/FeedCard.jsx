@@ -4,7 +4,9 @@ import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
 import { db, auth, provider } from '../database/firebase';
 import { limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import gs from './globalStyles.js';
 import {toTitleCase, convertTimestamp} from './utils.js';
@@ -73,55 +75,80 @@ class FeedCard extends React.Component {
     });
   }
 
+  doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd((_event, success) => {
+      if (success) {
+        this.likePost();
+      }
+    });
+
+  taps = Gesture.Exclusive(this.doubleTap);
+
   render() {
     const item = this.props.item;
     return (
-      <Card key={item.timestamp} containerStyle={gs.card}>
-        <View style={gs.topsection}>
-          <View style={styles.titlebar}>
-            <Text style={styles.title} onPress={() => this.props.navigation.navigate('UserPage', {id: this.state.id})}>
-              <Ionicons name="person-circle-outline" style={styles.title}/>
-              &nbsp;{this.state.firstname + " " + this.state.lastname}
-            </Text>
-            <Text style={styles.subtitle}>
-              <Ionicons name="barbell-outline" size={10} style={styles.titleText}/>
-              &nbsp;{convertTimestamp(item.timestamp)}
-            </Text>
-          </View>
-          <Text style={[styles.title, styles.workoutTitle]}>{item.title}</Text>
-        </View>
-        <View style={gs.workouts}>
-          {Object.values(item.data).map((workout, i) => (
-            <View key={i}>
-              <View style={gs.workout}>
-                <Text style={gs.workoutTitle}>
-                  {workout.workout ? toTitleCase(workout.workout) : 'Workout'}
+      <GestureDetector gesture={this.taps}>
+        <Card key={item.timestamp} containerStyle={gs.card}>
+          <View style={gs.leftright}>
+            <View style={gs.left}>
+              <View style={gs.topsection}>
+                <View style={gs.titlebar}>
+                  {item.data[0] && item.data[0]["workout"] === "bench" ?
+                    <Icon name="chair" size={25} style={styles.titleText}/>
+                  :
+                    <Ionicons name="barbell-outline" size={30} style={styles.titleText}/>
+                  }
+                  <Text style={gs.title} onPress={() => this.props.navigation.navigate('UserPage', {id: this.state.id})}>
+                    {this.state.firstname + " " + this.state.lastname + "'s " + item.title}
+                  </Text>
+                </View>
+                <Text style={gs.subtitle}>
+                  {convertTimestamp(item.timestamp)}
                 </Text>
-                <Text style={gs.workoutBody}>
-                  {workout.sets}x{workout.reps}@{workout.weight}lb
-                </Text>
+                {item.notes ? <Text style={gs.notes}>{item.notes}</Text> : ''}
               </View>
-              {i < Object.values(item.data).length - 1 ? <View style={gs.divider}/> : ""}
             </View>
-          ))}
-          {item.notes ? <Text style={gs.notes}>{item.notes}</Text> : ''}
-        </View>
-        <View style={gs.buttons}>
-          <TouchableOpacity style={styles.likes} onPress={this.likePost}>
-            <Text>
-              {this.state.liked ?
-                <Ionicons name="heart" size={20} color={gs.backgroundColor} />
-                :
-                <Ionicons name="heart-outline" size={20} color={gs.backgroundColor} />
-              }
-            </Text>
-            <Text style={styles.likeText}>{this.state.likes} likes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={gs.clearButton} onPress={() => {}}>
-            <Ionicons name="chatbox-outline" size={20} color={gs.backgroundColor} />
-          </TouchableOpacity>
-        </View>
-      </Card>
+            <View style={gs.right}>
+              <View style={gs.buttons}>
+                <TouchableOpacity style={styles.likes} onPress={this.likePost}>
+                  <Text>
+                    {this.state.liked ?
+                      <Ionicons name="heart" size={36} color={gs.backgroundColor} />
+                      :
+                      <Ionicons name="heart-outline" size={36} color={gs.backgroundColor} />
+                    }
+                  </Text>
+                  <Text style={styles.likeText}>{this.state.likes} likes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={gs.clearButton} onPress={() => {}}>
+                  <Ionicons name="chatbox-outline" size={36} color={gs.backgroundColor} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          <View style={gs.dividerMedium} />
+          <View style={gs.dividerLight} />
+          <View style={gs.bottom}>
+            <View style={gs.workouts}>
+              {Object.values(item.data).map((workout, i) => (
+                <View key={i}>
+                  <View style={gs.workout}>
+                    <Text style={gs.workoutTitle}>
+                      {workout.workout ? toTitleCase(workout.workout) : 'Workout'}
+                    </Text>
+                    <Text style={gs.workoutBody}>
+                      {workout.sets}x{workout.reps}@{workout.weight}lb
+                    </Text>
+                  </View>
+                  {i < Object.values(item.data).length - 1 ? <View style={gs.divider}/> : ""}
+                </View>
+              ))}
+            </View>
+          </View>
+          <View style={gs.dividerPink} />
+        </Card>
+      </GestureDetector>
     );
   }
 }
@@ -146,33 +173,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  title: {
-    textAlign: 'left',
-    color: 'black',
-    margin: 0,
-    padding: 0,
-    fontSize: 16,
-  },
-  subtitle: {
-    color: gs.textSecondaryColor,
-    margin: 0,
-    padding: 0,
-    fontSize: 10,
-  },
-  titlebar: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
   workoutTitle: {
     fontWeight: 'bold',
-    marginTop: 2,
+    marginTop: 10,
+    fontFamily: "SourceSansPro_700Bold",
   },
   likeText: {
     margin: 0,
     padding: 0,
     fontSize: 10,
+    fontFamily: gs.bodyFont,
   },
 })
 

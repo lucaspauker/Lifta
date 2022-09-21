@@ -20,3 +20,6 @@ export function formatBigNumber(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+export const wait = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}

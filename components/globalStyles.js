@@ -1,9 +1,16 @@
 const mainColor = '#1d2951';
 const mainLightColor = '#8698d4';
 const secondaryColor = '#DC143C';
-const backgroundColor = '#F5F5F5';
+const secondaryColorLight = '#ed365b';
+const backgroundColor = '#FFF';
+const spacing = 4;
+const smallSpacing = 2;
+const bodyFont = "SourceSansPro_400Regular";
+const bodyFontBold = "SourceSansPro_600SemiBold";
+const bodyFontItalic = "SourceSansPro_400Regular_Italic";
 
 const gs = {
+  bodyFont: bodyFont,
   backgroundColor: mainColor,
   primaryColor: mainColor,
   secondaryColor: secondaryColor,
@@ -19,20 +26,56 @@ const gs = {
     color: 'white',
     fontFamily: "Oswald_400Regular",
     fontWeight: 'bold',
-    letterSpacing: 1,
+  },
+  smallHeader: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: 'white',
+    fontFamily: "Oswald_400Regular",
+    fontWeight: 'bold',
+  },
+  noRightLetter: {
+    marginLeft: spacing,
+  },
+  noLeftLetter: {
+    marginRight: spacing,
+  },
+  normalLetter: {
+    marginRight: spacing,
+    marginLeft: spacing,
+  },
+  smallNoRightLetter: {
+    marginLeft: smallSpacing,
+  },
+  smallNoLeftLetter: {
+    marginRight: smallSpacing,
+  },
+  smallNormalLetter: {
+    marginRight: smallSpacing,
+    marginLeft: smallSpacing,
+  },
+  barbell: {
+    color: 'white',
+    transform: [{rotate: '90deg'}],
+    marginTop: 6,
+  },
+  smallBarbell: {
+    color: 'white',
+    transform: [{rotate: '90deg'}],
+    marginTop: 3,
   },
   pageHeader: {
-    textAlign: 'left',
-    fontSize: 25,
+    textAlign: 'center',
+    fontSize: 28,
     color: secondaryColor,
     fontWeight: 'bold',
     marginTop: 0,
-    marginBottom: 5,
+    marginBottom: 10,
     fontFamily: "Oswald_400Regular",
   },
   pageHeaderBox: {
-    borderBottomWidth: 2,
-    borderColor: secondaryColor,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   container: {
     flex: 1,
@@ -49,39 +92,77 @@ const gs = {
     justifyContent: "flex-start",
     paddingTop: 5,
     paddingBottom: 0,
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: 0,
+    paddingRight: 0,
     color: 'white',
     backgroundColor: backgroundColor,
     width: '100%',
-    minHeight: '100%',
+  },
+  title: {
+    color: 'black',
+    margin: 0,
+    padding: 0,
+    fontSize: 20,
+    fontFamily: bodyFont,
+    marginLeft: 10,
+  },
+  subtitle: {
+    color: 'grey',
+    marginTop: 2,
+    padding: 0,
+    fontSize: 14,
+    fontFamily: bodyFont,
+  },
+  titlebar: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   button: {
-    backgroundColor: mainColor,
-    marginTop: 10,
-    overflow: 'hidden',
+    marginTop: 0,
+    marginBottom: 0,
+    height: 30,
+    borderWidth: 2,
+    borderColor: secondaryColor,
     borderRadius: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  centerBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: secondaryColor,
   },
   clearButton: {
     marginTop: 10,
     marginBottom: 10,
   },
+  leftright: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: 'space-between',
+  },
   card: {
-    marginTop: 10,
+    marginTop: 0,
+    marginBottom: 0,
     marginLeft: 0,
     marginRight: 0,
-    borderWidth: 0,
-    borderRadius: 10,
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
     padding: 0,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-
-    elevation: 3,
+    borderWidth: 0,
+    backgroundColor: backgroundColor,
   },
   workouts: {
     marginTop: 10,
@@ -97,39 +178,75 @@ const gs = {
     marginTop: 2,
   },
   workoutTitle: {
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: 'bold',
+    fontFamily: bodyFontBold,
   },
   workoutBody: {
-    fontSize: 16,
+    fontSize: 24,
+    fontFamily: bodyFont,
+    marginLeft: 20,
   },
   divider: {
     margin: 0,
     padding: 0,
+    width: 0,
+    height: 0,
+    backgroundColor: mainColor,
+  },
+  dividerPink: {
+    margin: 0,
+    padding: 0,
+    width: '100%',
+    height: 10,
+    backgroundColor: mainColor,
+  },
+  dividerPinkThick: {
+    margin: 0,
+    padding: 0,
+    width: '100%',
+    height: 10,
+    backgroundColor: mainColor,
+  },
+  dividerMedium: {
+    margin: 0,
+    padding: 0,
     width: '100%',
     height: 1,
-    backgroundColor: 'lightgrey'
+    backgroundColor: '#DCDCDC',
   },
-  buttons: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginLeft: 10,
-    marginRight: 10,
-    borderTopWidth: 1,
-    borderColor: secondaryColor,
+  dividerLight: {
+    margin: 0,
+    padding: 0,
+    width: '100%',
+    height: 1,
+    backgroundColor: '#E0E0E0',
   },
   topsection: {
     paddingTop: 10,
-    paddingBottom: 10,
+    paddingBottom: 15,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  buttons: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: 10,
     marginRight: 10,
-    borderBottomWidth: 1,
-    borderColor:secondaryColor,
+  },
+  left: {
+    width: '80%',
+  },
+  right: {
+    width: '20%',
   },
   notes: {
     fontStyle: 'italic',
+    fontSize: 15,
     marginTop: 10,
+    fontFamily: bodyFont,
   },
 }
 

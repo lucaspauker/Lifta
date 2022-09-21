@@ -185,7 +185,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   card: {
-    padding: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingRight: 10,
+    paddingLeft: 10,
   },
   title: {
     fontWeight: 'bold',

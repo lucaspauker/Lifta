@@ -52,9 +52,11 @@ class EditProfile extends React.Component {
     return (
       <ScrollView>
         <View style={gs.pageContainer}>
-          <Text style={gs.pageHeader}>
-            Edit Profile
-          </Text>
+          <View style={gs.pageHeaderBox}>
+            <Text style={gs.pageHeader}>
+              Edit Profile
+            </Text>
+          </View>
           <View style={styles.box}>
             <Text style={styles.label}>First Name</Text>
             <TextInput

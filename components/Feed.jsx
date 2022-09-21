@@ -1,11 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
+import { RefreshControl, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
 import { db, auth, provider } from '../database/firebase';
 import { limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import {wait} from './utils.js';
 import gs from './globalStyles.js';
 import Loading from './Loading';
 import FeedCard from './FeedCard';
@@ -15,6 +16,7 @@ class Feed extends React.Component {
     super(props);
     this.state = {
       isLoading: true,
+      refreshing: false,
       data: [],
     };
   }
@@ -39,8 +41,14 @@ class Feed extends React.Component {
         id["key"] = String(item._key).split('/')[1];
         data.push(id);
       });
-      this.setState({data: data, isLoading: false});
+      this.setState({data: data, isLoading: false, refreshing: false});
     });
+  }
+
+  onRefresh = () => {
+    this.setState({refreshing: true},
+      () => {wait(100).then(() => this.reload())}
+    );
   }
 
   componentDidMount() {
@@ -50,17 +58,25 @@ class Feed extends React.Component {
   render() {
     if (this.state.isLoading){
       return(
-        <Loading />
+        <View />
       );
     }
     return (
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+            tintColor='white'
+          />
+        }>
         <View style={gs.pageContainer}>
           <View style={gs.pageHeaderBox}>
             <Text style={gs.pageHeader}>
-              Feed
+              Global feed
             </Text>
           </View>
+          <View style={gs.dividerPinkThick} />
           {this.state.data.map((item, i) => (
             <FeedCard key={i} item={item} reload={this.reload} navigation={this.props.navigation}/>
           ))}

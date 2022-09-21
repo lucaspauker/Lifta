@@ -4,7 +4,22 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts, Oswald_400Regular, } from '@expo-google-fonts/oswald';
+import {
+  SourceSansPro_200ExtraLight,
+  SourceSansPro_200ExtraLight_Italic,
+  SourceSansPro_300Light,
+  SourceSansPro_300Light_Italic,
+  SourceSansPro_400Regular,
+  SourceSansPro_400Regular_Italic,
+  SourceSansPro_600SemiBold,
+  SourceSansPro_600SemiBold_Italic,
+  SourceSansPro_700Bold,
+  SourceSansPro_700Bold_Italic,
+  SourceSansPro_900Black,
+  SourceSansPro_900Black_Italic,
+} from '@expo-google-fonts/source-sans-pro';
 
 import Feed from './components/Feed';
 //import Search from './Search';
@@ -24,9 +39,19 @@ const Tab = createBottomTabNavigator();
 function Title() {
   return (
     <View style={styles.title}>
-      <Ionicons name="barbell-outline" size={30} style={styles.titleText}/>
-      <Text style={styles.titleText}>Lifta</Text>
-      <Ionicons name="barbell-outline" size={30} style={styles.titleText}/>
+      <Text style={[gs.smallHeader, gs.smallNoRightLetter]}>
+        L
+      </Text>
+      <Ionicons name="barbell-outline" size={18} style={gs.smallBarbell}/>
+      <Text style={[gs.smallHeader, gs.smallNoLeftLetter]}>
+        F
+      </Text>
+      <Text style={[gs.smallHeader, gs.smallNormalLetter]}>
+        T
+      </Text>
+      <Text style={[gs.smallHeader, gs.smallNormalLetter]}>
+        A
+      </Text>
     </View>
   );
 }
@@ -43,7 +68,18 @@ function FeedNavigator() {
   return (
     <FeedStack.Navigator
       initialRouteName="Feed"
-      screenOptions = {screenOptions}
+      screenOptions = {{
+        headerStyle: {
+          backgroundColor: gs.backgroundColor,
+          elevation: 0,
+          shadowOffset: {
+            width: 0, height: 0
+          },
+        },
+        tabBarStyle: {
+          borderTopWidth: 0,
+        }
+      }}
     >
       <FeedStack.Screen
         name="Feed"
@@ -102,6 +138,10 @@ function Home() {
       screenOptions={({ route }) => ({
         headerStyle: {
           backgroundColor: gs.backgroundColor,
+          elevation: 0,
+          shadowOffset: {
+            width: 0, height: 0
+          },
         },
         headerTintColor: gs.textColor,
         tabBarIcon: ({ focused, color, size }) => {
@@ -118,10 +158,15 @@ function Home() {
           }
 
           // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={gs.backgroundColor} />;
+          return <Ionicons name={iconName} size={size} color={'white'} />;
         },
-        tabBarActiveTintColor: gs.primaryColor,
-        tabBarInactiveTintColor: gs.primaryColor,
+        tabBarActiveTintColor: 'white',
+        tabBarInactiveTintColor: 'white',
+        tabBarStyle: {
+          paddingTop: 8,
+          backgroundColor: gs.primaryColor,
+          borderTopWidth: 0,
+        },
       })}
     >
       <Tab.Screen
@@ -155,7 +200,7 @@ const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: gs.lightBackgroundColor,
+    background: gs.primaryColor,
   },
 };
 
@@ -164,48 +209,62 @@ const Stack = createStackNavigator();
 export default function App() {
   let [fontsLoaded] = useFonts({
     Oswald_400Regular,
+    SourceSansPro_200ExtraLight,
+    SourceSansPro_200ExtraLight_Italic,
+    SourceSansPro_300Light,
+    SourceSansPro_300Light_Italic,
+    SourceSansPro_400Regular,
+    SourceSansPro_400Regular_Italic,
+    SourceSansPro_600SemiBold,
+    SourceSansPro_600SemiBold_Italic,
+    SourceSansPro_700Bold,
+    SourceSansPro_700Bold_Italic,
+    SourceSansPro_900Black,
+    SourceSansPro_900Black_Italic,
   });
   if (!fontsLoaded) {
     return <ActivityIndicator size="large" color="#9E9E9E"/>;
   }
   return (
-    <NavigationContainer theme={MyTheme}>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerTitleAlign: 'center',
-          headerStyle: {
-            backgroundColor: gs.backgroundColor,
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}>
-        <Stack.Screen
-          name="Signup"
-          component={Signup}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Splash"
-          component={Splash}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer theme={MyTheme}>
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            headerTitleAlign: 'center',
+            headerStyle: {
+              backgroundColor: gs.backgroundColor,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}>
+          <Stack.Screen
+            name="Signup"
+            component={Signup}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Splash"
+            component={Splash}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
@@ -222,6 +281,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
   },
   titleText: {
     color: gs.textColor,
