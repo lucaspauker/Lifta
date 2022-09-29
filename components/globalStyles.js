@@ -1,7 +1,7 @@
 const mainColor = '#1d2951';
 const mainLightColor = '#8698d4';
 const secondaryColor = '#DC143C';
-const secondaryColorLight = '#ed365b';
+const secondaryColorLight = '#f37c94';
 const backgroundColor = '#FFF';
 const spacing = 4;
 const smallSpacing = 2;
@@ -14,6 +14,7 @@ const gs = {
   backgroundColor: mainColor,
   primaryColor: mainColor,
   secondaryColor: secondaryColor,
+  secondaryColorLight: secondaryColorLight,
   lightBackgroundColor: backgroundColor,
   textColor: 'white',
   textSecondaryColor: 'grey',
@@ -73,6 +74,12 @@ const gs = {
     marginBottom: 10,
     fontFamily: "Oswald_400Regular",
   },
+  icons: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
   pageHeaderBox: {
     paddingLeft: 10,
     paddingRight: 10,
@@ -125,7 +132,7 @@ const gs = {
     height: 30,
     borderWidth: 2,
     borderColor: secondaryColor,
-    borderRadius: 10,
+    borderRadius: 20,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -134,6 +141,7 @@ const gs = {
   },
   centerBox: {
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -247,6 +255,53 @@ const gs = {
     fontSize: 15,
     marginTop: 10,
     fontFamily: bodyFont,
+  },
+  plusCard: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  circleLabel: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: secondaryColor,
+    marginLeft: 5,
+    marginRight: 5,
+    marginTop: 2,
+    marginBottom: 7,
+  },
+  circleLabelText: {
+    color: secondaryColor,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  darkCircleLabel: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: secondaryColor,
+    backgroundColor: secondaryColor,
+    marginLeft: 5,
+    marginRight: 5,
+    marginTop: 2,
+    marginBottom: 7,
+  },
+  darkCircleLabelText: {
+    color: 'white',
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  labelBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  footer: {
+    marginTop: 10,
+    marginBottom: 10,
   },
 }
 

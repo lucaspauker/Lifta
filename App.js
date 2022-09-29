@@ -76,6 +76,7 @@ function FeedNavigator() {
             width: 0, height: 0
           },
         },
+        headerTintColor: gs.textColor,
         tabBarStyle: {
           borderTopWidth: 0,
         }
@@ -221,6 +222,7 @@ export default function App() {
     SourceSansPro_700Bold_Italic,
     SourceSansPro_900Black,
     SourceSansPro_900Black_Italic,
+    'icomoon': require('./assets/fonts/icomoon.ttf'),
   });
   if (!fontsLoaded) {
     return <ActivityIndicator size="large" color="#9E9E9E"/>;

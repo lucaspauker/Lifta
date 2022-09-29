@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import gs from './globalStyles.js';
 import {toTitleCase, convertTimestamp} from './utils.js';
 import Loading from './Loading';
+import CustomIcon from './CustomIcon';
 
 class FeedCard extends React.Component {
   constructor(props) {
@@ -95,7 +96,9 @@ class FeedCard extends React.Component {
               <View style={gs.topsection}>
                 <View style={gs.titlebar}>
                   {item.data[0] && item.data[0]["workout"] === "bench" ?
-                    <Icon name="chair" size={25} style={styles.titleText}/>
+                    <CustomIcon name='bicep' size={25} style={styles.titleText}/>
+                  : item.data[0] && (item.data[0]["workout"] === "squat" || item.data[0]["workout"] === "front squat") ?
+                    <CustomIcon name='leg' size={30} style={styles.titleText}/>
                   :
                     <Ionicons name="barbell-outline" size={30} style={styles.titleText}/>
                   }

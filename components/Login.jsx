@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, provider } from '../database/firebase';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -17,11 +17,13 @@ export default class Login extends Component {
     }
     this.inputs = {};
   }
+
   updateInputVal = (val, prop) => {
     const state = this.state;
     state[prop] = val;
     this.setState(state);
   }
+
   userLogin = () => {
     if(this.state.email === '' && this.state.password === '') {
     } else {
@@ -47,11 +49,16 @@ export default class Login extends Component {
   }
 
   render() {
-    if(this.state.isLoading){
+    if (this.state.isLoading) {
       return(
         <Loading />
       );
     }
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.props.navigation.replace('Home');
+      }
+    });
     return (
       <View style={gs.container}>
         <View style={styles.header}>

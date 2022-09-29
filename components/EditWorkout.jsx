@@ -1,9 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
+import { TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
 import { db, auth } from '../database/firebase';
 import { updateDoc, doc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import gs from './globalStyles.js';
 import AddCard from './AddCard.jsx';
@@ -17,9 +18,11 @@ class EditWorkout extends React.Component {
       id: this.props.route.params.id,
       data: data,
       title: this.props.route.params.item.title,
+      notes: this.props.route.params.item.notes,
       indices: [...Array(len).keys()],
       lastIndex: len,
     };
+    this.inputs = {};
   }
 
   updateCard = (index, data) => {
@@ -51,6 +54,10 @@ class EditWorkout extends React.Component {
     this.setState(state);
   }
 
+  focusNextField = (id) => {
+    this.inputs[id].focus();
+  }
+
   submit = () => {
     console.log("Writing data");
     let title = this.state.title;
@@ -58,9 +65,12 @@ class EditWorkout extends React.Component {
     updateDoc(doc(db, 'workouts', this.state.id), {
       data: this.state.data,
       title: title,
+      notes: this.state.notes,
     }).then(() => {
       this.setState({
         data: {},
+        notes: '',
+        title: '',
         indices: [this.state.lastIndex + 1],
         lastIndex: this.state.lastIndex + 1,
       });
@@ -70,41 +80,64 @@ class EditWorkout extends React.Component {
 
   render() {
     return (
-      <ScrollView>
+      <KeyboardAwareScrollView keyboardShouldPersistTaps='always'>
         <View style={gs.pageContainer}>
           <View style={gs.pageHeaderBox}>
             <Text style={gs.pageHeader}>
               Edit workout
             </Text>
           </View>
-          <TextInput
-            style={[styles.input, styles.title]}
-            onChangeText={(val) => this.updateInputVal(val, 'title')}
-            value={this.state.title}
-            placeholder="Title"
-            placeholderTextColor={gs.textSecondaryColor}
-          />
+          <View style={gs.dividerPink} />
+          <Card containerStyle={[gs.card, styles.titleCard]}>
+            <TextInput
+              returnKeyType={ "next" }
+              blurOnSubmit={ false }
+              onSubmitEditing={() => {
+                this.focusNextField('notes');
+              }}
+              ref={ input => {
+                this.inputs['title'] = input;
+              }}
+              style={[styles.input, styles.title]}
+              onChangeText={(val) => this.updateInputVal(val, 'title')}
+              value={this.state.title}
+              placeholder="Workout title"
+              placeholderTextColor={gs.textSecondaryColor}
+            />
+          </Card>
+          <Card containerStyle={[gs.card, styles.notesCard]}>
+            <TextInput
+              blurOnSubmit={ false }
+              onSubmitEditing={() => {
+              }}
+              ref={ input => {
+                this.inputs['notes'] = input;
+              }}
+              style={[styles.input, styles.notes]}
+              onChangeText={(val) => this.updateInputVal(val, 'notes')}
+              value={this.state.notes}
+              multiline={true}
+              placeholder="Notes"
+              placeholderTextColor={gs.textSecondaryColor}
+            />
+          </Card>
+          <View style={gs.dividerPink} />
           {this.state.indices.map((ind) =>
-            <AddCard key={ind} index={ind} updateCard={this.updateCard} deleteCard={this.deleteCard} data={this.state.data[String(this.state.indices[ind])]}/>
+            <View key={ind}>
+              <AddCard index={ind} updateCard={this.updateCard} deleteCard={this.deleteCard} data={this.state.data[String(this.state.indices[ind])]}/>
+               <View style={gs.dividerPink} />
+            </View>
           )}
-          <Button
-            icon={
+          <View style={gs.icons}>
+            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.addExercise}>
               <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
-            }
-            title=""
-            type="clear"
-            style={gs.clearButton}
-            color={gs.backgroundColor}
-            onPress={this.addExercise}
-          />
-          <Button
-            title="Save"
-            style={[gs.button, styles.button]}
-            color={gs.backgroundColor}
-            onPress={this.submit}
-          />
+            </TouchableOpacity>
+            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.submit}>
+              <Ionicons name="save-outline" size={25} color={gs.backgroundColor} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 }
@@ -121,6 +154,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
     marginRight: 10,
+  },
+  titleCard: {
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  notesCard: {
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  title: {
+    fontWeight: 'bold',
+    borderWidth: 0,
+  },
+  input: {
+    height: 40,
+    minWidth: 80,
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 0,
+    borderTopWidth: 0,
+  },
+  notes: {
+    height: 80,
+    borderWidth: 0,
   },
 })
 

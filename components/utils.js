@@ -16,6 +16,14 @@ export function convertTimestamp(t) {
   return day + ', ' + date + ' @ ' + firstTime + ' ' + lastTime;
 }
 
+export function convertTimestampCondensed(t) {
+  let a = new Date(t);
+  let month = (a.getMonth() + 1).toString();
+  let date = a.getDate().toString();
+  let year = a.getFullYear().toString().slice(2);
+  return month + '/' + date + '/' + year;
+}
+
 export function formatBigNumber(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
+import { TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
 import { db, auth } from '../database/firebase';
 import { getDoc, updateDoc, doc } from 'firebase/firestore';
@@ -57,6 +57,7 @@ class EditProfile extends React.Component {
               Edit Profile
             </Text>
           </View>
+          <View style={gs.dividerPink} />
           <View style={styles.box}>
             <Text style={styles.label}>First Name</Text>
             <TextInput
@@ -77,12 +78,12 @@ class EditProfile extends React.Component {
               placeholderTextColor={gs.textSecondaryColor}
             />
           </View>
-          <Button
-            title="Save"
-            style={[gs.button, styles.button]}
-            color={gs.backgroundColor}
-            onPress={this.submit}
-          />
+          <View style={gs.dividerPink} />
+          <View style={gs.icons}>
+            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.submit}>
+              <Ionicons name="save-outline" size={25} color={gs.backgroundColor} />
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     );

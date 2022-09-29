@@ -68,6 +68,7 @@ class UserPage extends React.Component {
               </Text>
             </View>
           </View>
+          <View style={gs.dividerPink} />
           {this.state.data.map((item, i) => (
             <FeedCard key={i} item={item} reload={this.reload} navigation={this.props.navigation}/>
           ))}

@@ -1,10 +1,11 @@
 import React from 'react';
-import { RefreshControl, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
+import { FlatList, RefreshControl, TouchableOpacity, SafeAreaView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
 import { db, auth, provider } from '../database/firebase';
-import { limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
+import { startAfter, limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Animated, {FadeIn} from 'react-native-reanimated';
 
 import {wait} from './utils.js';
 import gs from './globalStyles.js';
@@ -16,8 +17,10 @@ class Feed extends React.Component {
     super(props);
     this.state = {
       isLoading: true,
+      isLoadingBottom: false,
       refreshing: false,
       data: [],
+      lastVisible: null,
     };
   }
 
@@ -28,12 +31,30 @@ class Feed extends React.Component {
     .catch(error => this.setState({ errorMessage: error.message }))
   }
 
+  loadMore = () => {
+    console.log("Loading more data");
+    let data = this.state.data;
+    this.setState({isLoadingBottom: true});
+    if (!this.state.lastVisible) return;
+    const q = query(collection(db, "workouts"), orderBy('timestamp', 'desc'), startAfter(this.state.lastVisible), limit(5));
+    getDocs(q).then((res) => {
+      let lbLifted = 0;
+      res.forEach((item) => {
+        let id = item.data();
+        console.log(id);
+        id["key"] = String(item._key).split('/')[1];
+        data.push(id);
+      });
+      console.log(res.length);
+      this.setState({data: data, refreshing: false, lastVisible: res.docs[res.docs.length-1], isLoadingBottom: false});
+    });
+  }
+
   reload = () => {
     console.log("Loading data");
     let data = [];
     this.setState({isLoading: true});
-    console.log(auth.currentUser.uid);
-    const q = query(collection(db, "workouts"), orderBy('timestamp', 'desc'));
+    const q = query(collection(db, "workouts"), orderBy('timestamp', 'desc'), limit(5));
     getDocs(q).then((res) => {
       let lbLifted = 0;
       res.forEach((item) => {
@@ -41,7 +62,7 @@ class Feed extends React.Component {
         id["key"] = String(item._key).split('/')[1];
         data.push(id);
       });
-      this.setState({data: data, isLoading: false, refreshing: false});
+      this.setState({data: data, isLoading: false, refreshing: false, lastVisible: res.docs[res.docs.length-1]});
     });
   }
 
@@ -51,6 +72,18 @@ class Feed extends React.Component {
     );
   }
 
+  renderFooter = () => {
+    if (this.state.isLoadingBottom) {
+      return (
+        <View style={gs.footer}>
+          <ActivityIndicator color='white'/>
+        </View>
+      )
+    } else {
+      return null;
+    }
+  };
+
   componentDidMount() {
     this.reload();
   }
@@ -58,30 +91,38 @@ class Feed extends React.Component {
   render() {
     if (this.state.isLoading){
       return(
-        <View />
+        <Loading />
       );
     }
     return (
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.onRefresh}
-            tintColor='white'
-          />
-        }>
-        <View style={gs.pageContainer}>
-          <View style={gs.pageHeaderBox}>
-            <Text style={gs.pageHeader}>
-              Global feed
-            </Text>
-          </View>
-          <View style={gs.dividerPinkThick} />
-          {this.state.data.map((item, i) => (
-            <FeedCard key={i} item={item} reload={this.reload} navigation={this.props.navigation}/>
-          ))}
-        </View>
-      </ScrollView>
+      <SafeAreaView>
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.onRefresh}
+              tintColor='white'
+            />}
+          ListHeaderComponent={
+            <View style={gs.pageContainer}>
+              <View style={gs.pageHeaderBox}>
+                <Text style={gs.pageHeader}>
+                  Global feed
+                </Text>
+              </View>
+              <View style={gs.dividerPinkThick} />
+            </View>
+          }
+          data={this.state.data}
+          renderItem={(item) => (
+            <FeedCard item={item.item} reload={this.reload} navigation={this.props.navigation}/>
+          )}
+          ListFooterComponent={this.renderFooter}
+          keyExtractor={(item, index) => String(index)}
+          onEndReached={this.loadMore}
+          refreshing={this.state.refreshing}
+        />
+      </SafeAreaView>
     );
   }
 }

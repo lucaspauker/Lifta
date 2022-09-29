@@ -1,7 +1,8 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
+import { Keyboard, TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
 //import {Picker} from '@react-native-picker/picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { db, auth } from '../database/firebase';
 import { doc, collection, addDoc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -21,6 +22,7 @@ class Add extends React.Component {
       notes: '',
       date: new Date(),
     };
+    this.inputs = {};
   }
 
   updateCard = (index, data) => {
@@ -87,9 +89,13 @@ class Add extends React.Component {
     this.setState({indices: newInd, lastIndex: this.state.lastIndex + 1});
   }
 
+  focusNextField = (id) => {
+    this.inputs[id].focus();
+  }
+
   render() {
     return (
-      <ScrollView keyboardShouldPersistTaps='handled'>
+      <KeyboardAwareScrollView keyboardShouldPersistTaps='always'>
         <View style={gs.pageContainer}>
           <View style={[gs.pageHeaderBox, styles.pageHeaderBox]}>
             <Text style={gs.pageHeader}>
@@ -97,7 +103,7 @@ class Add extends React.Component {
             </Text>
             <TouchableOpacity style={gs.button} onPress={this.clear}>
               <Text style={gs.buttonText}>
-                Clear
+                Reset
               </Text>
             </TouchableOpacity>
           </View>
@@ -112,8 +118,16 @@ class Add extends React.Component {
               style={styles.datetime}
             />
           </View>
-          <Card containerStyle={[gs.card, styles.card, styles.titleCard]}>
+          <Card containerStyle={[gs.card, styles.titleCard]}>
             <TextInput
+              returnKeyType={ "next" }
+              blurOnSubmit={ false }
+              onSubmitEditing={() => {
+                this.focusNextField('notes');
+              }}
+              ref={ input => {
+                this.inputs['title'] = input;
+              }}
               style={[styles.input, styles.title]}
               onChangeText={(val) => this.updateInputVal(val, 'title')}
               value={this.state.title}
@@ -121,8 +135,14 @@ class Add extends React.Component {
               placeholderTextColor={gs.textSecondaryColor}
             />
           </Card>
-          <Card containerStyle={[gs.card, styles.card, styles.notesCard]}>
+          <Card containerStyle={[gs.card, styles.notesCard]}>
             <TextInput
+              blurOnSubmit={ false }
+              onSubmitEditing={() => {
+              }}
+              ref={ input => {
+                this.inputs['notes'] = input;
+              }}
               style={[styles.input, styles.notes]}
               onChangeText={(val) => this.updateInputVal(val, 'notes')}
               value={this.state.notes}
@@ -138,19 +158,18 @@ class Add extends React.Component {
                <View style={gs.dividerPink} />
             </View>
           )}
-          <TouchableOpacity style={[gs.card, styles.plusCard]} onPress={this.addExercise}>
-            <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
-          </TouchableOpacity>
-          <View style={gs.dividerPink} />
-          <View style={gs.centerBox}>
-            <TouchableOpacity style={[gs.button, styles.saveButton]} onPress={this.submit}>
-              <Text style={gs.buttonText}>
+          <View style={gs.icons}>
+            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.addExercise}>
+              <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
+            </TouchableOpacity>
+            <TouchableOpacity style={[gs.button, styles.button]} onPress={this.submit}>
+              <Text style={[gs.buttonText, styles.buttonText]}>
                 Save
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 }
@@ -163,6 +182,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 0,
     borderTopWidth: 0,
+  },
+  button: {
+    borderColor: gs.primaryColor,
+  },
+  buttonText: {
+    color: gs.primaryColor,
   },
   saveButton: {
     marginTop: 10,
@@ -185,16 +210,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  button: {
-  },
-  plusCard: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
   },
   titleCard: {
@@ -221,7 +236,7 @@ const styles = StyleSheet.create({
   datetimeBox: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'start',
+    justifyContent: 'flex-start',
     width: '100%',
     paddingRight: 10,
   },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
+import { KeyboardAvoidingView, Keyboard, TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
 //import RNPickerSelect from 'react-native-picker-select';
 import { db, auth } from '../database/firebase';
@@ -41,12 +41,12 @@ class AddCard extends React.Component {
         weight: 0,
       };
     }
-    //this.setPicker = this.setPicker.bind(this)
+    this.inputs = {};
   }
 
-  //setPicker = (input) => {
-  //  this.setState({workoutType: input});
-  //}
+  focusNextField = (id) => {
+    this.inputs[id].focus();
+  }
 
   updateInputVal = (val, prop) => {
     const state = this.state;
@@ -69,7 +69,6 @@ class AddCard extends React.Component {
   }
 
   render() {
-    console.log(this.state.sets);
     const query = this.state.workoutType.toLowerCase();
     let workouts;
     if (this.state.showDropdown && query) {
@@ -90,62 +89,103 @@ class AddCard extends React.Component {
               onFocus={this.onFocus}
               onBlur={this.onBlur}
               inputContainerStyle={styles.inputContainer}
-              style={styles.input}
+              style={styles.titleInput}
               value={this.state.workoutType}
               onChangeText={(val) => this.updateInputVal(toTitleCase(val), 'workoutType')}
               placeholder="Workout type"
               placeholderTextColor={gs.textSecondaryColor}
-              renderResultList={
-                ({ data, flatListProps }) =>
-                  <View style={styles.listContainer}>
-                    <View style={styles.innerListContainer}>
-                      {data.map((item, index) => (
-                        <View key={index}>
-                          <TouchableOpacity onPress={() => this.updateInputVal(item, 'workoutType')} style={comp(item, workouts[workouts.length - 1]) ? styles.lastItem : styles.item}>
-                            <Text style={styles.itemText}>
-                              {toTitleCase(item)}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      ))}
-                    </View>
+              renderResultList={({data, flatListProps}) =>
+                <View style={styles.listContainer}>
+                  <View style={styles.innerListContainer}>
+                    {data.map((item, index) => (
+                      <View key={index}>
+                        <TouchableOpacity onPress={() => {
+                            console.log("foobar");
+                            this.updateInputVal(item, 'workoutType');
+                            Keyboard.dismiss();
+                          }}
+                          style={comp(item, workouts[workouts.length - 1]) ? styles.lastItem : styles.item}>
+                          <Text style={styles.itemText}>
+                            {toTitleCase(item)}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))}
                   </View>
+                </View>
               }
             />
           </View>
         </View>
         <View style={{zIndex: -1, marginTop: 30}}>
           <View style={styles.weight}>
+            <View style={styles.overallBox}>
+              <TouchableOpacity style={styles.pmButton} onPress={() => this.updateInputVal(String(Math.max(0, parseInt(this.state.sets) - 1)), 'sets')}>
+                <Text style={styles.pmButtonText}>-</Text>
+              </TouchableOpacity>
+              <TextInput
+                returnKeyType={ "done" }
+                blurOnSubmit={ true }
+                onSubmitEditing={() => {
+                }}
+                ref={ input => {
+                  this.inputs['sets'] = input;
+                }}
+                style={styles.input}
+                onChangeText={(val) => this.updateInputVal(parseInt(val), 'sets')}
+                value={this.state.sets}
+                placeholder="Sets"
+                placeholderTextColor={gs.textSecondaryColor}
+                keyboardType="number-pad"
+              />
+              <TouchableOpacity style={styles.pmButton} onPress={() => this.updateInputVal(String(parseInt(this.state.sets) + 1), 'sets')}>
+                <Text style={styles.pmButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.intermediateText}>x</Text>
+            <View style={[gs.centerBox, styles.overallBox]}>
+              <TouchableOpacity style={styles.pmButton} onPress={() => this.updateInputVal(String(Math.max(0, parseInt(this.state.reps) - 1)), 'reps')}>
+                <Text style={styles.pmButtonText}>-</Text>
+              </TouchableOpacity>
+              <TextInput
+                returnKeyType={ "done" }
+                blurOnSubmit={ true }
+                onSubmitEditing={() => {
+                }}
+                ref={ input => {
+                  this.inputs['reps'] = input;
+                }}
+                style={styles.input}
+                onChangeText={(val) => this.updateInputVal(parseInt(val), 'reps')}
+                value={this.state.reps}
+                placeholder="Reps"
+                placeholderTextColor={gs.textSecondaryColor}
+                keyboardType="number-pad"
+              />
+              <TouchableOpacity style={styles.pmButton} onPress={() => this.updateInputVal(String(parseInt(this.state.reps) + 1), 'reps')}>
+                <Text style={styles.pmButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.intermediateText}>@</Text>
             <TextInput
-              style={styles.input}
-              onChangeText={(val) => this.updateInputVal(parseInt(val), 'sets')}
-              value={this.state.sets}
-              placeholder="Sets"
-              placeholderTextColor={gs.textSecondaryColor}
-              keyboardType="numeric"
-            />
-            <Text>x</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={(val) => this.updateInputVal(parseInt(val), 'reps')}
-              value={this.state.reps}
-              placeholder="Reps"
-              placeholderTextColor={gs.textSecondaryColor}
-              keyboardType="numeric"
-            />
-            <Text>@</Text>
-            <TextInput
-              style={styles.input}
+              returnKeyType={ "done" }
+              blurOnSubmit={ true }
+              onSubmitEditing={() => {
+              }}
+              ref={ input => {
+                this.inputs['weight'] = input;
+              }}
+              style={styles.lastInput}
               onChangeText={(val) => this.updateInputVal(parseInt(val), 'weight')}
               value={this.state.weight}
               placeholder="Weight"
               placeholderTextColor={gs.textSecondaryColor}
-              keyboardType="numeric"
+              keyboardType="number-pad"
             />
           </View>
           <View style={[gs.buttons, styles.buttons]}>
             <TouchableOpacity style={[gs.clearButton, styles.buttonMarginTop]} onPress={() => {this.props.deleteCard(this.props.index)}}>
-              <Ionicons name="trash-outline" size={20} color={gs.backgroundColor} />
+              <Ionicons name="trash-outline" size={24} color={gs.backgroundColor} />
             </TouchableOpacity>
           </View>
         </View>
@@ -155,19 +195,6 @@ class AddCard extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    borderWidth: 1,
-    minWidth: 80,
-    padding: 10,
-    borderRadius: 5,
-  },
-  picker: {
-    fontSize: 30,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 5,
-  },
   innerPicker: {
     placeholder: {
       color: gs.textSecondaryColor,
@@ -238,6 +265,55 @@ const styles = StyleSheet.create({
   },
   itemText: {
     margin: 10,
+  },
+  pmButton: {
+    backgroundColor: gs.secondaryColorLight,
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 11,
+    paddingBottom: 11,
+  },
+  pmButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  overallBox: {
+    borderWidth: 1,
+    borderRadius: 15,
+    height: 40,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  titleInput: {
+    height: 40,
+    minWidth: 60,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 15,
+    textAlign: 'left',
+  },
+  input: {
+    height: 40,
+    minWidth: 45,
+    padding: 10,
+    paddingLeft: 5,
+    paddingRight: 5,
+    textAlign: 'center',
+  },
+  lastInput: {
+    height: 40,
+    borderWidth: 1,
+    minWidth: 80,
+    padding: 10,
+    borderRadius: 15,
+    textAlign: 'center',
+  },
+  intermediateText: {
+    fontSize: 20,
   },
 })
 
