@@ -49,7 +49,6 @@ class Add extends React.Component {
 
   submit = () => {
     console.log("Writing data");
-    console.log(this.state.data);
     let title = this.state.title;
     if (title === '') title = "Workout";
     addDoc(collection(db, 'workouts'), {
@@ -213,8 +212,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleCard: {
-    paddingTop: 5,
-    paddingBottom: 5,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   notesCard: {
     paddingTop: 5,
@@ -225,7 +224,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   notes: {
-    height: 80,
+    height: 50,
     borderWidth: 0,
   },
   clearButton: {

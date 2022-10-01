@@ -93,6 +93,10 @@ const gs = {
     backgroundColor: mainColor,
     color: 'white',
   },
+  curvedContainer: {
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
   pageContainer: {
     display: "flex",
     flexDirection: "column",
@@ -171,6 +175,9 @@ const gs = {
     padding: 0,
     borderWidth: 0,
     backgroundColor: backgroundColor,
+  },
+  armleg: {
+    color: mainColor,
   },
   workouts: {
     marginTop: 10,

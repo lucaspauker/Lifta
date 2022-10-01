@@ -78,8 +78,10 @@ class ProfileSettings extends React.Component {
             <TouchableOpacity style={[gs.card, styles.plusCard]} onPress={this.editProfile}>
               <Ionicons name="create-outline" size={30} color={gs.backgroundColor} />
             </TouchableOpacity>
-            <TouchableOpacity style={[gs.card, styles.plusCard]} onPress={this.signOut}>
-              <Ionicons name="log-out-outline" size={30} color={gs.backgroundColor} />
+            <TouchableOpacity style={[gs.button, styles.button]} onPress={this.signOut}>
+              <Text style={[gs.buttonText, styles.buttonText]}>
+                Log out
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -122,6 +124,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  button: {
+    borderColor: gs.primaryColor,
+  },
+  buttonText: {
+    color: gs.primaryColor,
   },
 })
 

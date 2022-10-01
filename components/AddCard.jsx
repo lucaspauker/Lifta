@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   pmButton: {
-    backgroundColor: gs.secondaryColorLight,
+    backgroundColor: gs.primaryColor,
     paddingLeft: 5,
     paddingRight: 5,
     paddingTop: 11,

@@ -5,7 +5,7 @@ import { signOut } from 'firebase/auth';
 import { db, auth, provider } from '../database/firebase';
 import { startAfter, limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Animated, {FadeIn} from 'react-native-reanimated';
+//import Animated, {FadeIn} from 'react-native-reanimated';
 
 import {wait} from './utils.js';
 import gs from './globalStyles.js';
@@ -97,6 +97,7 @@ class Feed extends React.Component {
     return (
       <SafeAreaView>
         <FlatList
+          showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}

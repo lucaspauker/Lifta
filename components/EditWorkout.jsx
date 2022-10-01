@@ -132,8 +132,10 @@ class EditWorkout extends React.Component {
             <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.addExercise}>
               <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
             </TouchableOpacity>
-            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.submit}>
-              <Ionicons name="save-outline" size={25} color={gs.backgroundColor} />
+            <TouchableOpacity style={[gs.button, styles.button]} onPress={this.submit}>
+              <Text style={[gs.buttonText, styles.buttonText]}>
+                Save
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -176,8 +178,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
   },
   notes: {
-    height: 80,
+    height: 50,
     borderWidth: 0,
+  },
+  button: {
+    borderColor: gs.primaryColor,
+  },
+  buttonText: {
+    color: gs.primaryColor,
   },
 })
 

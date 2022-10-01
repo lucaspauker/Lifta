@@ -79,6 +79,7 @@ class ProfileWorkouts extends React.Component {
     }
     return (
       <ScrollView
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}

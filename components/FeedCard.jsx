@@ -4,7 +4,7 @@ import { Card, Button } from "@rneui/base";
 import { signOut } from 'firebase/auth';
 import { db, auth, provider } from '../database/firebase';
 import { limit, addDoc, deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import DoubleClick from 'react-native-double-tap';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -18,6 +18,7 @@ class FeedCard extends React.Component {
     super(props);
     this.state = {
       likes: 0,
+      comments: 0,
       liked: false,
       likeKey: '',
       username: '',
@@ -27,10 +28,12 @@ class FeedCard extends React.Component {
     }
   }
 
+  clickCommentButton = () => {
+    this.props.navigation.navigate('Workout', {id: this.props.item.key, userId: this.state.id})
+  }
+
   likePost = () => {
-    console.log(this.props.item);
     if (this.state.liked) {
-      console.log(this.state.likeKey);
       deleteDoc(doc(db, 'likes', this.state.likeKey)).then(() => {
         this.setState({
           liked: false,
@@ -67,6 +70,12 @@ class FeedCard extends React.Component {
       this.setState({likes: res.size});
     });
 
+    // Get comments
+    const qqq = query(collection(db, "comments"), where("postId", "==", this.props.item.key));
+    getDocs(qqq).then((res) => {
+      this.setState({comments: res.size});
+    });
+
     const qq = query(collection(db, "likes"), where("post", "==", this.props.item.key), where("user", "==", auth.currentUser.uid), limit(1));
     getDocs(qq).then((res) => {
       if (!res.empty) {
@@ -76,31 +85,28 @@ class FeedCard extends React.Component {
     });
   }
 
-  doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd((_event, success) => {
-      if (success) {
-        this.likePost();
-      }
-    });
-
-  taps = Gesture.Exclusive(this.doubleTap);
-
   render() {
     const item = this.props.item;
     return (
-      <GestureDetector gesture={this.taps}>
+      <DoubleClick
+        singleTap={() => {
+          this.props.navigation.navigate('Workout', {id: item.key, userId: this.state.id})
+        }}
+        doubleTap={() => {
+          this.likePost()
+        }}
+        delay={200}>
         <Card key={item.timestamp} containerStyle={gs.card}>
           <View style={gs.leftright}>
             <View style={gs.left}>
               <View style={gs.topsection}>
                 <View style={gs.titlebar}>
-                  {item.data[0] && item.data[0]["workout"] === "bench" ?
-                    <CustomIcon name='bicep' size={25} style={styles.titleText}/>
-                  : item.data[0] && (item.data[0]["workout"] === "squat" || item.data[0]["workout"] === "front squat") ?
-                    <CustomIcon name='leg' size={30} style={styles.titleText}/>
+                  {Object.keys(item.data).length > 0 && item.data[Object.keys(item.data)[0]]["workout"] === "bench" ?
+                    <CustomIcon name='bicep' size={25} style={gs.armleg}/>
+                  : Object.keys(item.data).length > 0 && (item.data[Object.keys(item.data)[0]]["workout"] === "squat" || item.data[Object.keys(item.data)[0]]["workout"] === "front squat") ?
+                    <CustomIcon name='leg' size={30} style={gs.armleg}/>
                   :
-                    <Ionicons name="barbell-outline" size={30} style={styles.titleText}/>
+                    <Ionicons name="barbell-outline" size={30} style={gs.armleg}/>
                   }
                   <Text style={gs.title} onPress={() => this.props.navigation.navigate('UserPage', {id: this.state.id})}>
                     {this.state.firstname + " " + this.state.lastname + "'s " + item.title}
@@ -124,9 +130,13 @@ class FeedCard extends React.Component {
                   </Text>
                   <Text style={styles.likeText}>{this.state.likes} likes</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={gs.clearButton} onPress={() => {}}>
-                  <Ionicons name="chatbox-outline" size={36} color={gs.backgroundColor} />
-                </TouchableOpacity>
+                {this.props.isFocused ?
+                  '' :
+                  <TouchableOpacity style={styles.likes} onPress={this.clickCommentButton}>
+                    <Ionicons name="chatbox-outline" size={36} color={gs.backgroundColor} />
+                    <Text style={styles.likeText}>{this.state.comments} comments</Text>
+                  </TouchableOpacity>
+                }
               </View>
             </View>
           </View>
@@ -151,7 +161,7 @@ class FeedCard extends React.Component {
           </View>
           <View style={gs.dividerPink} />
         </Card>
-      </GestureDetector>
+      </DoubleClick>
     );
   }
 }

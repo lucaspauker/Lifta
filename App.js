@@ -31,6 +31,7 @@ import Profile from './components/Profile';
 import EditWorkout from './components/EditWorkout';
 import EditProfile from './components/EditProfile';
 import UserPage from './components/UserPage';
+import WorkoutPage from './components/WorkoutPage';
 
 import gs from './components/globalStyles.js';
 
@@ -96,6 +97,13 @@ function FeedNavigator() {
           headerTitle: (props) => <Title {...props} />,
         }}
       />
+      <FeedStack.Screen
+        name="Workout"
+        component={WorkoutPage}
+        options={{
+          headerTitle: (props) => <Title {...props} />,
+        }}
+      />
     </FeedStack.Navigator>
   );
 }
@@ -105,7 +113,19 @@ function ProfileNavigator() {
   return (
     <ProfileStack.Navigator
       initialRouteName="Profile"
-      screenOptions = {screenOptions}
+      screenOptions = {{
+        headerStyle: {
+          backgroundColor: gs.backgroundColor,
+          elevation: 0,
+          shadowOffset: {
+            width: 0, height: 0
+          },
+        },
+        headerTintColor: gs.textColor,
+        tabBarStyle: {
+          borderTopWidth: 0,
+        }
+      }}
     >
       <ProfileStack.Screen
         name="Profile"
@@ -124,6 +144,13 @@ function ProfileNavigator() {
       <ProfileStack.Screen
         name="EditProfile"
         component={EditProfile}
+        options={{
+          headerTitle: (props) => <Title {...props} />,
+        }}
+      />
+      <FeedStack.Screen
+        name="Workout"
+        component={WorkoutPage}
         options={{
           headerTitle: (props) => <Title {...props} />,
         }}
