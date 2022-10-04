@@ -5,7 +5,22 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useFonts, Oswald_400Regular, } from '@expo-google-fonts/oswald';
+import {
+  useFonts,
+  Oswald_200ExtraLight,
+  Oswald_200ExtraLight_Italic,
+  Oswald_300Light,
+  Oswald_300Light_Italic,
+  Oswald_400Regular,
+  Oswald_400Regular_Italic,
+  Oswald_500Medium,
+  Oswald_600SemiBold,
+  Oswald_600SemiBold_Italic,
+  Oswald_700Bold,
+  Oswald_700Bold_Italic,
+  Oswald_900Black,
+  Oswald_900Black_Italic,
+} from '@expo-google-fonts/oswald';
 import {
   SourceSansPro_200ExtraLight,
   SourceSansPro_200ExtraLight_Italic,
@@ -237,6 +252,7 @@ const Stack = createStackNavigator();
 export default function App() {
   let [fontsLoaded] = useFonts({
     Oswald_400Regular,
+    Oswald_500Medium,
     SourceSansPro_200ExtraLight,
     SourceSansPro_200ExtraLight_Italic,
     SourceSansPro_300Light,

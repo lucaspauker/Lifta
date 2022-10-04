@@ -6,14 +6,25 @@ export function toTitleCase(str) {
 
 export function convertTimestamp(t) {
   let a = new Date(t);
-  let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   let day = days[a.getDay()];
-  let localeString = a.toLocaleString('en-US');
-  let date = localeString.split(',')[0];
-  let time = localeString.split(',')[1];
-  let firstTime = time.split(':').slice(0, 2).join(':');
-  let lastTime = time.split(' ')[2];
-  return day + ', ' + date + ' @ ' + firstTime + ' ' + lastTime;
+  let month = (a.getMonth() + 1).toString();
+  let date = a.getDate().toString();
+  let year = a.getFullYear().toString().slice(2);
+
+  let hours = a.getHours().toString();
+  let suffix;
+  if (hours > 11) {
+    suffix = 'PM';
+    if (hours > '12') {
+      hours -= 12;
+    }
+  } else {
+    suffix = 'AM';
+  }
+  let minutes = a.getMinutes().toString();
+
+  return day + ', ' + month + '/' + date + '/' + year + ' @ ' + hours + ':' + minutes + ' ' + suffix;
 }
 
 export function convertTimestampCondensed(t) {
@@ -31,3 +42,4 @@ export function formatBigNumber(n) {
 export const wait = (timeout) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
+

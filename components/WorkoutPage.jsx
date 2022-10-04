@@ -21,6 +21,7 @@ class CommentBox extends React.Component {
       username: '',
       firstname: '',
       lastname: '',
+      isLoading: true,
     }
   }
 
@@ -34,12 +35,42 @@ class CommentBox extends React.Component {
   componentDidMount() {
     getDoc(doc(db, "users", this.props.userId)).then((res) => {
       if (res.data()) {
-        this.setState({username: res.data().username, firstname: res.data().firstname, lastname: res.data().lastname});
+        this.setState({username: res.data().username, firstname: res.data().firstname, lastname: res.data().lastname, isLoading: false});
       }
     });
   }
 
   render() {
+    if (this.state.isLoading) {
+      return (
+        <View>
+          <View style={gs.dividerMedium} />
+          <View style={gs.dividerLight} />
+          <View style={styles.commentBox}>
+            <View>
+              <View style={[styles.commentTitleBox, styles.spaceBottom]}>
+                <Text style={[{fontWeight: 'bold'}, gs.greyedOutText]}>
+                  ........................
+                </Text>
+                <Text style={[gs.subtitle, styles.subtitle, styles.spaceLeft, gs.greyedOutText]}>
+                  .....................
+                </Text>
+              </View>
+              <Text style={[styles.commentText, gs.greyedOutText]}>
+                ...........................................................
+              </Text>
+            </View>
+            {this.state.userId === auth.currentUser.uid ?
+              <TouchableOpacity onPress={() => {this.deleteComment()}}>
+                <Ionicons name="trash-outline" size={16} color={gs.backgroundColor} />
+              </TouchableOpacity>
+              :
+              ''
+            }
+          </View>
+        </View>
+      );
+    }
     return (
       <View>
         <View style={gs.dividerMedium} />
@@ -170,7 +201,7 @@ class WorkoutPage extends React.Component {
                 placeholderTextColor={gs.textSecondaryColor}
               />
               <TouchableOpacity style={[gs.button, styles.button]} onPress={this.submitComment}>
-                <Text style={[gs.buttonText, styles.buttonText]}>
+                <Text style={gs.buttonText}>
                   Submit
                 </Text>
               </TouchableOpacity>
@@ -194,12 +225,8 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width - 80 - 5,
   },
   button: {
-    borderColor: gs.primaryColor,
     width: 80,
     marginRight: 5,
-  },
-  buttonText: {
-    color: gs.primaryColor,
   },
   inputComment: {
     display: 'flex',
@@ -222,7 +249,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  commentText: {
+  subtitle: {
+    marginTop: 0,
+  },
+  spaceLeft: {
+    marginLeft: 10,
+  },
+  spaceBottom: {
+    marginBottom: 10,
   },
 })
 

@@ -5,6 +5,7 @@ import { db, auth } from '../database/firebase';
 import { updateDoc, doc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 import gs from './globalStyles.js';
 import AddCard from './AddCard.jsx';
@@ -14,14 +15,17 @@ class EditWorkout extends React.Component {
     super(props);
     const data = this.props.route.params.item.data;
     const len = Object.keys(data).length;
+    console.log(this.props.route.params.item.timestamp);
     this.state = {
       id: this.props.route.params.id,
       data: data,
       title: this.props.route.params.item.title,
       notes: this.props.route.params.item.notes,
-      indices: [...Array(len).keys()],
+      indices: Object.keys(data),
       lastIndex: len,
+      date: new Date(this.props.route.params.item.timestamp),
     };
+    console.log(this.state.indices);
     this.inputs = {};
   }
 
@@ -35,10 +39,12 @@ class EditWorkout extends React.Component {
   deleteCard = (index) => {
     const i = this.state.indices.indexOf(index);
     let newInd = this.state.indices;
+    let newData = this.state.data;
     if (i > -1) { // only splice array when item is found
       newInd.splice(i, 1); // 2nd parameter means remove one item only
+      delete newData[index];
     }
-    this.setState({indices: newInd});
+    this.setState({indices: newInd, data: newData});
   }
 
   addExercise = () => {
@@ -66,6 +72,7 @@ class EditWorkout extends React.Component {
       data: this.state.data,
       title: title,
       notes: this.state.notes,
+      timestamp: this.state.date.getTime(),
     }).then(() => {
       this.setState({
         data: {},
@@ -73,6 +80,7 @@ class EditWorkout extends React.Component {
         title: '',
         indices: [this.state.lastIndex + 1],
         lastIndex: this.state.lastIndex + 1,
+        date: new Date(),
       });
       this.props.navigation.navigate('Profile', {});
     });
@@ -88,6 +96,16 @@ class EditWorkout extends React.Component {
             </Text>
           </View>
           <View style={gs.dividerPink} />
+          <View style={gs.datetimeBox}>
+            <RNDateTimePicker
+              themeVariant="light"
+              mode="datetime"
+              value={this.state.date}
+              onChange={(e, val) => this.updateInputVal(val, 'date')}
+              accentColor={gs.primaryColor}
+              style={gs.datetime}
+            />
+          </View>
           <Card containerStyle={[gs.card, styles.titleCard]}>
             <TextInput
               returnKeyType={ "next" }
@@ -124,7 +142,7 @@ class EditWorkout extends React.Component {
           <View style={gs.dividerPink} />
           {this.state.indices.map((ind) =>
             <View key={ind}>
-              <AddCard index={ind} updateCard={this.updateCard} deleteCard={this.deleteCard} data={this.state.data[String(this.state.indices[ind])]}/>
+              <AddCard index={ind} updateCard={this.updateCard} deleteCard={this.deleteCard} data={this.state.data[ind]}/>
                <View style={gs.dividerPink} />
             </View>
           )}

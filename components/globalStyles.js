@@ -1,7 +1,10 @@
+import { Dimensions } from 'react-native';
+
 const mainColor = '#1d2951';
 const mainLightColor = '#8698d4';
 const secondaryColor = '#DC143C';
-const secondaryColorLight = '#f37c94';
+const secondaryColorLight = '#F596A9';
+const lightGreyColor = '#f8bdc4';
 const backgroundColor = '#FFF';
 const spacing = 4;
 const smallSpacing = 2;
@@ -16,6 +19,7 @@ const gs = {
   secondaryColor: secondaryColor,
   secondaryColorLight: secondaryColorLight,
   lightBackgroundColor: backgroundColor,
+  lightGreyColor: lightGreyColor,
   textColor: 'white',
   textSecondaryColor: 'grey',
   bigSpace: 50,
@@ -72,7 +76,7 @@ const gs = {
     fontWeight: 'bold',
     marginTop: 0,
     marginBottom: 10,
-    fontFamily: "Oswald_400Regular",
+    fontFamily: "Oswald_500Medium",
   },
   icons: {
     display: 'flex',
@@ -130,12 +134,26 @@ const gs = {
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  button: {
+  redButton: {
     marginTop: 0,
     marginBottom: 0,
     height: 30,
     borderWidth: 2,
     borderColor: secondaryColor,
+    backgroundColor: secondaryColor,
+    borderRadius: 20,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  button: {
+    marginTop: 0,
+    marginBottom: 0,
+    height: 30,
+    borderWidth: 2,
+    borderColor: mainColor,
     borderRadius: 20,
     display: 'flex',
     justifyContent: 'center',
@@ -149,10 +167,16 @@ const gs = {
     justifyContent: 'center',
     alignItems: 'center',
   },
+  redButtonText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: 'white',
+    fontWeight: '500',
+  },
   buttonText: {
     fontSize: 16,
     textAlign: 'center',
-    color: secondaryColor,
+    color: mainColor,
   },
   clearButton: {
     marginTop: 10,
@@ -305,10 +329,30 @@ const gs = {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    backgroundColor: 'white',
+    width: Dimensions.get("window").width,
   },
   footer: {
     marginTop: 10,
     marginBottom: 10,
+  },
+  datetimeBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    width: '100%',
+    paddingRight: 10,
+  },
+  datetime: {
+    margin: 0,
+    padding: 0,
+    marginTop: 10,
+    marginBottom: 10,
+    width: '100%',
+  },
+  greyedOutText: {
+    backgroundColor: lightGreyColor,
+    color: lightGreyColor,
   },
 }
 

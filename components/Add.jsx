@@ -35,10 +35,12 @@ class Add extends React.Component {
   deleteCard = (index) => {
     const i = this.state.indices.indexOf(index);
     let newInd = this.state.indices;
+    let newData = this.state.data;
     if (i > -1) { // only splice array when item is found
       newInd.splice(i, 1); // 2nd parameter means remove one item only
+      delete newData[index];
     }
-    this.setState({indices: newInd});
+    this.setState({indices: newInd, data: newData});
   }
 
   updateInputVal = (val, prop) => {
@@ -100,21 +102,29 @@ class Add extends React.Component {
             <Text style={gs.pageHeader}>
               Add a workout
             </Text>
-            <TouchableOpacity style={gs.button} onPress={this.clear}>
-              <Text style={gs.buttonText}>
-                Reset
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.buttons}>
+              <TouchableOpacity style={gs.redButton} onPress={this.clear}>
+                <Text style={gs.redButtonText}>
+                  Reset
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.smallSpace} />
+              <TouchableOpacity style={gs.button} onPress={this.submit}>
+                <Text style={gs.buttonText}>
+                  Save
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={gs.dividerPink} />
-          <View style={styles.datetimeBox}>
+          <View style={gs.datetimeBox}>
             <RNDateTimePicker
               themeVariant="light"
               mode="datetime"
               value={this.state.date}
               onChange={(e, val) => this.updateInputVal(val, 'date')}
               accentColor={gs.primaryColor}
-              style={styles.datetime}
+              style={gs.datetime}
             />
           </View>
           <Card containerStyle={[gs.card, styles.titleCard]}>
@@ -160,11 +170,6 @@ class Add extends React.Component {
           <View style={gs.icons}>
             <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.addExercise}>
               <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
-            </TouchableOpacity>
-            <TouchableOpacity style={[gs.button, styles.button]} onPress={this.submit}>
-              <Text style={[gs.buttonText, styles.buttonText]}>
-                Save
-              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -232,25 +237,20 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 0,
   },
-  datetimeBox: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    width: '100%',
-    paddingRight: 10,
-  },
-  datetime: {
-    margin: 0,
-    padding: 0,
-    marginTop: 10,
-    marginBottom: 10,
-    width: '100%',
-  },
   pageHeaderBox: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  buttons: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  smallSpace: {
+    width: 10,
   },
 })
 

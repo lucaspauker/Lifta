@@ -58,7 +58,7 @@ class ProfileWorkouts extends React.Component {
 
   onRefresh = () => {
     this.setState({refreshing: true},
-      () => {wait(100).then(() => this.reload())}
+      () => {this.reload()}
     );
   }
 
@@ -88,7 +88,7 @@ class ProfileWorkouts extends React.Component {
           />
         }>
         <View style={gs.dividerPink} />
-        <View style={gs.pageContainer}>
+        <View style={[gs.pageContainer, styles.pageContainer]}>
           <View style={styles.stats}>
             <Text>
               Total workouts: {this.state.totalWorkouts}
@@ -116,8 +116,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 5,
-    marginBottom: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: 'white',
+  },
+  pageContainer: {
+    backgroundColor: gs.primaryColor,
+    paddingTop: 0,
   },
 })
 

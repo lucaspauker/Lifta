@@ -2,7 +2,7 @@ import React from 'react';
 import { RefreshControl, Dimensions, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import { db, auth, provider } from '../database/firebase';
 import {deleteDoc, doc, collection, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
-import { LineChart } from "react-native-chart-kit";
+import { BarChart, LineChart } from "react-native-chart-kit";
 import {convertTimestampCondensed} from './utils.js';
 
 import {wait} from './utils.js';
@@ -20,28 +20,47 @@ class Analytics extends React.Component {
       currentWorkout: '',
       currentSetsReps: '',
       workoutDictionary: {},
+      lastWeekDays: [],
+      lastWeekWeights: [],
     }
   }
 
   reload = () => {
     console.log("Loading data");
-    let data = [];
     this.setState({isLoading: true});
+
+    let data = [];
+    let workoutDictionary = {};
+    let workouts = new Set();
+    let lastWeekDays = [];
+    let dayWeightsDict = {};
+    let lastTimestamp = -1;
     const q = query(collection(db, "workouts"), where('user', '==', auth.currentUser.uid));
+    // Add the week days into the dictionary
+    let d = new Date();
+    for (let i=0; i<7; i++) {
+      let datestring = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+      lastWeekDays.push(datestring);
+      d.setDate(d.getDate() - 1);
+    }
+    lastWeekDays = lastWeekDays.reverse();
+
     getDocs(q).then((res) => {
-      let workoutDictionary = this.state.workoutDictionary;
-      let workouts = this.state.workouts;
       res.forEach((item) => {
         let id = item.data();
+
         id["key"] = String(item._key).split('/')[1];
+
         data.push(id);
+        let weightLifted = 0;
         Object.keys(id.data).forEach((w) => {
           let workout = id.data[w].workout;
           let elem = id.data[w];
           elem.weight = parseInt(elem.weight);
           let key = elem.sets + 'x' + elem.reps;
+          weightLifted += elem.sets * elem.reps * elem.weight;
           workouts.add(workout);
-          if (workout in this.state.workoutDictionary) {
+          if (workout in workoutDictionary) {
             if (key in workoutDictionary[workout]) {
               workoutDictionary[workout][key].push([elem.weight, id.timestamp]);
             } else {
@@ -52,7 +71,26 @@ class Analytics extends React.Component {
             workoutDictionary[workout][key] = [[elem.weight, id.timestamp]];
           }
         });
+
+        let d = new Date(id.timestamp);
+        let datestring = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+        if (lastWeekDays.includes(datestring)) {
+          if (d in dayWeightsDict) {
+            dayWeightsDict[datestring] += weightLifted;
+          } else {
+            dayWeightsDict[datestring] = weightLifted;
+          }
+        }
       });
+      let lastWeekWeights = [];
+      for (let i=0; i<7; i++) {
+        if (lastWeekDays[i] in dayWeightsDict) {
+          lastWeekWeights.push(dayWeightsDict[lastWeekDays[i]]);
+        } else {
+          lastWeekWeights.push(0);
+        }
+      }
+      console.log(lastWeekWeights);
       for (let i=0; i<[...workouts].length; i++) {
         let workout = [...workouts][i];
         let keys = Object.keys(workoutDictionary[workout]);
@@ -63,6 +101,7 @@ class Analytics extends React.Component {
       workouts = [...workouts];
       workouts.sort()
       let firstKeys = Object.keys(workoutDictionary[workouts[0]]);
+      firstKeys.sort();
       let currentWorkout = workouts[0];
       data.sort((a, b) => b.timestamp - a.timestamp);
       this.setState({
@@ -70,6 +109,8 @@ class Analytics extends React.Component {
         currentWorkout: currentWorkout,
         currentSetsReps: firstKeys[0],
         workoutDictionary: workoutDictionary,
+        lastWeekDays: lastWeekDays,
+        lastWeekWeights: lastWeekWeights,
         data: data,
         isLoading: false,
         refreshing: false
@@ -96,7 +137,9 @@ class Analytics extends React.Component {
     const state = this.state;
     state[prop] = val;
     if (prop === 'currentWorkout') {
-      this.setState({currentSetsReps: Object.keys(this.state.workoutDictionary[val])[0]}, this.setState(state));
+      let firstKeys = Object.keys(this.state.workoutDictionary[val]);
+      firstKeys.sort((a, b) => parseInt(a.split('x')[0]) - parseInt(b.split('x')[0]));
+      this.setState({currentSetsReps: firstKeys[0]}, this.setState(state));
     } else {
       this.setState(state);
     }
@@ -124,7 +167,17 @@ class Analytics extends React.Component {
       datasets: [
         {
           data: workoutWeights,
-          color: (opacity = 1) => 'white',
+          color: () => 'black',
+          strokeWidth: 2
+        }
+      ],
+    };
+    const lastWeekData = {
+      labels: this.state.lastWeekDays,
+      datasets: [
+        {
+          data: this.state.lastWeekWeights,
+          color: () => 'black',
           strokeWidth: 2
         }
       ],
@@ -139,7 +192,52 @@ class Analytics extends React.Component {
           />
         }>
         <View style={gs.dividerPink} />
-        <View style={gs.pageContainer}>
+        <View style={[gs.pageContainer, styles.pageContainer]}>
+          <View style={gs.card, gs.labelBox, styles.labelBox}>
+            <Text style={styles.topLabel}>Pounds lifted over the past week:</Text>
+          </View>
+          <View style={gs.dividerPink} />
+          <View style={styles.chart}>
+            <LineChart
+              data={lastWeekData}
+              width={Dimensions.get("window").width - 10}
+              height={220}
+              yAxisSuffix=" lb"
+              yAxisInterval={1}
+              chartConfig={{
+                backgroundColor: 'white',
+                backgroundGradientFrom: 'white',
+                backgroundGradientTo: gs.secondaryColorLight,
+                decimalPlaces: 0,
+                color: () => 'black',
+                labelColor: () => 'black',
+                style: {
+                  borderRadius: 10,
+                },
+                propsForDots: {
+                  r: "5",
+                  strokeWidth: "0",
+                  stroke: 'white',
+                }
+              }}
+              style={{
+                marginVertical: 1,
+                borderRadius: 10,
+              }}
+              formatXLabel={(value) =>
+                lastWeekData.labels[0] === value
+                || lastWeekData.labels[2] === value
+                || lastWeekData.labels[4] === value
+                || lastWeekData.labels[6] === value
+                ? value
+                : ""
+              }
+            />
+          </View>
+          <View style={gs.dividerPink} />
+          <View style={gs.card, gs.labelBox, styles.topLabelBox}>
+            <Text style={styles.topLabel}>Graphs for specific workouts:</Text>
+          </View>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <View style={gs.card, gs.labelBox}>
               {workouts.map((item, i) => (
@@ -172,19 +270,19 @@ class Analytics extends React.Component {
             yAxisSuffix=" lb"
             yAxisInterval={1}
             chartConfig={{
-              backgroundColor: gs.secondaryColor,
-              backgroundGradientFrom: gs.secondaryColor,
-              backgroundGradientTo: gs.secondaryColor,
+              backgroundColor: 'white',
+              backgroundGradientFrom: 'white',
+              backgroundGradientTo: gs.secondaryColorLight,
               decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              color: () => 'black',
+              labelColor: () => 'black',
               style: {
-                borderRadius: 10
+                borderRadius: 10,
               },
               propsForDots: {
                 r: "5",
-                strokeWidth: "3",
-                stroke: gs.secondaryColor,
+                strokeWidth: "0",
+                stroke: 'white',
               }
             }}
             style={{
@@ -202,7 +300,23 @@ const styles = StyleSheet.create({
   chart: {
     marginLeft: 5,
     marginRight: 5,
-  }
+  },
+  pageContainer: {
+    backgroundColor: gs.primaryColor,
+    paddingTop: 0,
+  },
+  labelBox: {
+    padding: 5,
+    backgroundColor: 'white',
+  },
+  topLabel: {
+    color: gs.secondaryColor,
+    fontWeight: 'bold',
+  },
+  topLabelBox: {
+    padding: 5,
+    backgroundColor: 'white',
+  },
 })
 
 export default Analytics;

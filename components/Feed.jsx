@@ -45,7 +45,6 @@ class Feed extends React.Component {
         id["key"] = String(item._key).split('/')[1];
         data.push(id);
       });
-      console.log(res.length);
       this.setState({data: data, refreshing: false, lastVisible: res.docs[res.docs.length-1], isLoadingBottom: false});
     });
   }
@@ -68,7 +67,7 @@ class Feed extends React.Component {
 
   onRefresh = () => {
     this.setState({refreshing: true},
-      () => {wait(100).then(() => this.reload())}
+      () => {this.reload()}
     );
   }
 
@@ -115,8 +114,12 @@ class Feed extends React.Component {
             </View>
           }
           data={this.state.data}
-          renderItem={(item) => (
-            <FeedCard item={item.item} reload={this.reload} navigation={this.props.navigation}/>
+          renderItem={(item, i) => (
+            <FeedCard
+              item={item.item}
+              reload={this.reload}
+              navigation={this.props.navigation}
+            />
           )}
           ListFooterComponent={this.renderFooter}
           keyExtractor={(item, index) => String(index)}

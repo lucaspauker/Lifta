@@ -5,12 +5,12 @@ import { db, auth } from '../database/firebase';
 import {deleteDoc, doc, collection, query, where} from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import DoubleClick from 'react-native-double-tap';
 import { TabBar, TabView, SceneMap } from 'react-native-tab-view';
 
 import gs from './globalStyles.js';
 import {toTitleCase, convertTimestamp } from './utils.js';
 import CustomIcon from './CustomIcon';
+import DoubleTap from './DoubleTap';
 
 class ProfileCard extends React.Component {
   constructor(props) {
@@ -39,12 +39,9 @@ class ProfileCard extends React.Component {
   render() {
     const item = this.props.item;
     return (
-      <DoubleClick
+      <DoubleTap
         singleTap={() => {
           this.props.navigation.navigate('Workout', {id: item.key, userId: auth.currentUser.uid})
-        }}
-        doubleTap={() => {
-          this.likePost()
         }}
         delay={200}>
         <Card key={item.timestamp} containerStyle={gs.card}>
@@ -101,7 +98,7 @@ class ProfileCard extends React.Component {
             </View>
           </View>
         </Card>
-      </DoubleClick>
+      </DoubleTap>
     );
   }
 }
