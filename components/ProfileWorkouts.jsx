@@ -90,10 +90,10 @@ class ProfileWorkouts extends React.Component {
         <View style={gs.dividerPink} />
         <View style={[gs.pageContainer, styles.pageContainer]}>
           <View style={styles.stats}>
-            <Text>
+            <Text style={styles.statsText}>
               Total workouts: {this.state.totalWorkouts}
             </Text>
-            <Text>
+            <Text style={styles.statsText}>
               Pounds lifted: {this.state.lbLifted}
             </Text>
           </View>
@@ -116,9 +116,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: 'white',
+    paddingTop: 5,
+    paddingBottom: 5,
+    borderRadius: 10,
+  },
+  statsText: {
+    color: 'white',
+    fontSize: 15,
   },
   pageContainer: {
     backgroundColor: gs.primaryColor,

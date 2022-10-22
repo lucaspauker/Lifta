@@ -12,6 +12,7 @@ import gs from './globalStyles.js';
 import {toTitleCase, convertTimestamp} from './utils.js';
 import Loading from './Loading';
 import CustomIcon from './CustomIcon';
+import CommentBox from './CommentBox';
 
 class FeedCard extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class FeedCard extends React.Component {
       isLoading: true,
       likes: 0,
       comments: 0,
+      lastComment: null,
       liked: false,
       likeKey: '',
       username: '',
@@ -72,7 +74,20 @@ class FeedCard extends React.Component {
             this.setState({likes: res.size}, () => {
               // Get comments
               getDocs(qqq).then((res) => {
-                this.setState({comments: res.size}, () => {
+                let comments = [];
+                res.forEach((item) => {
+                  let id = item.data();
+                  id["key"] = String(item._key).split('/')[1];
+                  comments.push(id);
+                });
+                comments.sort((a, b) => b.timestamp - a.timestamp);
+                let lastComment;
+                if (comments) {
+                  lastComment = comments[0];
+                } else {
+                  lastComment = null;
+                }
+                this.setState({comments: res.size, lastComment: lastComment}, () => {
                   // See if user liked it
                   getDocs(qq).then((res) => {
                     if (!res.empty) {
@@ -95,7 +110,8 @@ class FeedCard extends React.Component {
     const item = this.props.item;
     if (this.state.isLoading) {
       return (
-        <Card key={item.timestamp} containerStyle={gs.card}>
+        <>
+        <View key={item.timestamp} style={gs.card}>
           <View style={gs.leftright}>
             <View style={gs.left}>
               <View style={gs.topsection}>
@@ -137,11 +153,13 @@ class FeedCard extends React.Component {
               </View>
             </View>
           </View>
-          <View style={gs.dividerPink} />
-        </Card>
+        </View>
+        <View style={gs.dividerPink} />
+        </>
       );
     }
     return (
+      <>
       <DoubleTap
         singleTap={() => {
           this.props.navigation.navigate('Workout', {id: item.key, userId: this.state.id})
@@ -150,7 +168,7 @@ class FeedCard extends React.Component {
           this.likePost()
         }}
         delay={200}>
-        <Card key={item.timestamp} containerStyle={gs.card}>
+        <View key={item.timestamp} style={gs.card}>
           <View style={gs.leftright}>
             <View style={gs.left}>
               <View style={gs.topsection}>
@@ -186,13 +204,17 @@ class FeedCard extends React.Component {
                       <Ionicons name="heart-outline" size={36} color={gs.backgroundColor} />
                     }
                   </Text>
-                  <Text style={styles.likeText}>{this.state.likes} likes</Text>
+                  <Text style={styles.likeText}>
+                    {this.state.likes === 1 ? this.state.likes + ' like' : this.state.likes + ' likes'}
+                  </Text>
                 </TouchableOpacity>
                 {this.props.isFocused ?
                   '' :
                   <TouchableOpacity style={styles.likes} onPress={this.clickCommentButton}>
                     <Ionicons name="chatbox-outline" size={36} color={gs.backgroundColor} />
-                    <Text style={styles.likeText}>{this.state.comments} comments</Text>
+                    <Text style={styles.likeText}>
+                      {this.state.comments === 1 ? this.state.comments + ' comment' : this.state.comments + ' comments'}
+                    </Text>
                   </TouchableOpacity>
                 }
               </View>
@@ -216,10 +238,25 @@ class FeedCard extends React.Component {
                 </View>
               ))}
             </View>
+            <View style={gs.curvedContainerBottom}>
+              {this.state.lastComment && !this.props.isFocused ?
+                <CommentBox text={this.state.lastComment.text} timestamp={this.state.lastComment.timestamp} userId={this.state.lastComment.userId} commentId={this.state.lastComment.key} reload={() => {}} isFocused={false}/>
+                : ''}
+              {this.state.comments === 2 && !this.props.isFocused ?
+                <View style={styles.moreComments}>
+                  <Text style={gs.subtitle}>+{this.state.comments - 1} more comment</Text>
+                </View>
+                : this.state.comments > 2 && !this.props.isFocused ?
+                <View style={styles.moreComments}>
+                  <Text>+{this.state.comments - 1} more comments</Text>
+                </View>
+                : ''}
+            </View>
           </View>
-          <View style={gs.dividerPink} />
-        </Card>
+        </View>
       </DoubleTap>
+      <View style={gs.dividerPink} />
+      </>
     );
   }
 }
@@ -260,7 +297,14 @@ const styles = StyleSheet.create({
   },
   title: {
     marginLeft: 0,
-  }
+  },
+  moreComments: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingBottom: 5,
+    marginTop: -10,
+  },
 })
 
 export default FeedCard;

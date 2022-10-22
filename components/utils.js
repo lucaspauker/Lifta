@@ -23,6 +23,7 @@ export function convertTimestamp(t) {
     suffix = 'AM';
   }
   let minutes = a.getMinutes().toString();
+  while (minutes.length < 2) minutes = "0" + minutes;
 
   return day + ', ' + month + '/' + date + '/' + year + ' @ ' + hours + ':' + minutes + ' ' + suffix;
 }

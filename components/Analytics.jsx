@@ -39,7 +39,7 @@ class Analytics extends React.Component {
     // Add the week days into the dictionary
     let d = new Date();
     for (let i=0; i<7; i++) {
-      let datestring = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+      let datestring = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear().toString().slice(2);
       lastWeekDays.push(datestring);
       d.setDate(d.getDate() - 1);
     }
@@ -73,7 +73,7 @@ class Analytics extends React.Component {
         });
 
         let d = new Date(id.timestamp);
-        let datestring = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+        let datestring = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear().toString().slice(2);
         if (lastWeekDays.includes(datestring)) {
           if (d in dayWeightsDict) {
             dayWeightsDict[datestring] += weightLifted;
@@ -90,7 +90,6 @@ class Analytics extends React.Component {
           lastWeekWeights.push(0);
         }
       }
-      console.log(lastWeekWeights);
       for (let i=0; i<[...workouts].length; i++) {
         let workout = [...workouts][i];
         let keys = Object.keys(workoutDictionary[workout]);
@@ -192,8 +191,8 @@ class Analytics extends React.Component {
           />
         }>
         <View style={gs.dividerPink} />
-        <View style={[gs.pageContainer, styles.pageContainer]}>
-          <View style={gs.card, gs.labelBox, styles.labelBox}>
+        <View>
+          <View style={[gs.labelBox, styles.labelBox]}>
             <Text style={styles.topLabel}>Pounds lifted over the past week:</Text>
           </View>
           <View style={gs.dividerPink} />
@@ -235,31 +234,34 @@ class Analytics extends React.Component {
             />
           </View>
           <View style={gs.dividerPink} />
-          <View style={gs.card, gs.labelBox, styles.topLabelBox}>
-            <Text style={styles.topLabel}>Graphs for specific workouts:</Text>
+          <View style={gs.dividerPink} />
+          <View style={gs.curvedContainer}>
+            <View style={styles.labelBox}>
+              <Text style={styles.topLabel}>Graphs for specific workouts:</Text>
+            </View>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontal}>
+              <View style={gs.labelBox}>
+                {workouts.map((item, i) => (
+                  <TouchableOpacity key={i} onPress={() => this.updateInputVal(item, 'currentWorkout')}>
+                    <View style={this.state.currentWorkout === item ? gs.darkCircleLabel : gs.circleLabel}>
+                      <Text style={this.state.currentWorkout === item ? gs.darkCircleLabelText : gs.circleLabelText}>{item}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontal}>
+              <View style={gs.labelBox}>
+                {workoutSetsReps.map((item, i) => (
+                  <TouchableOpacity key={i} onPress={() => this.updateInputVal(item, 'currentSetsReps')}>
+                    <View style={this.state.currentSetsReps === item ? gs.darkCircleLabel : gs.circleLabel}>
+                      <Text style={this.state.currentSetsReps === item ? gs.darkCircleLabelText : gs.circleLabelText}>{item}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
           </View>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <View style={gs.card, gs.labelBox}>
-              {workouts.map((item, i) => (
-                <TouchableOpacity key={i} onPress={() => this.updateInputVal(item, 'currentWorkout')}>
-                  <View style={this.state.currentWorkout === item ? gs.darkCircleLabel : gs.circleLabel}>
-                    <Text style={this.state.currentWorkout === item ? gs.darkCircleLabelText : gs.circleLabelText}>{item}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <View style={gs.card, gs.labelBox}>
-              {workoutSetsReps.map((item, i) => (
-                <TouchableOpacity key={i} onPress={() => this.updateInputVal(item, 'currentSetsReps')}>
-                  <View style={this.state.currentSetsReps === item ? gs.darkCircleLabel : gs.circleLabel}>
-                    <Text style={this.state.currentSetsReps === item ? gs.darkCircleLabelText : gs.circleLabelText}>{item}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
           <View style={gs.dividerPink} />
         </View>
         <View style={styles.chart}>
@@ -307,15 +309,15 @@ const styles = StyleSheet.create({
   },
   labelBox: {
     padding: 5,
-    backgroundColor: 'white',
   },
   topLabel: {
-    color: gs.secondaryColor,
+    color: 'white',
     fontWeight: 'bold',
   },
   topLabelBox: {
     padding: 5,
-    backgroundColor: 'white',
+  },
+  horizontal: {
   },
 })
 

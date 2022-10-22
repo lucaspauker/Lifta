@@ -41,7 +41,6 @@ class Feed extends React.Component {
       let lbLifted = 0;
       res.forEach((item) => {
         let id = item.data();
-        console.log(id);
         id["key"] = String(item._key).split('/')[1];
         data.push(id);
       });
@@ -104,14 +103,16 @@ class Feed extends React.Component {
               tintColor='white'
             />}
           ListHeaderComponent={
+            <>
             <View style={gs.pageContainer}>
               <View style={gs.pageHeaderBox}>
                 <Text style={gs.pageHeader}>
                   Global feed
                 </Text>
               </View>
-              <View style={gs.dividerPinkThick} />
             </View>
+            <View style={gs.dividerPinkThick} />
+            </>
           }
           data={this.state.data}
           renderItem={(item, i) => (

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Keyboard, TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
-//import {Picker} from '@react-native-picker/picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { db, auth } from '../database/firebase';
 import { doc, collection, addDoc } from 'firebase/firestore';
@@ -21,6 +20,7 @@ class Add extends React.Component {
       title: '',
       notes: '',
       date: new Date(),
+      private: false,
     };
     this.inputs = {};
   }
@@ -97,69 +97,73 @@ class Add extends React.Component {
   render() {
     return (
       <KeyboardAwareScrollView keyboardShouldPersistTaps='always'>
-        <View style={gs.pageContainer}>
-          <View style={[gs.pageHeaderBox, styles.pageHeaderBox]}>
-            <Text style={gs.pageHeader}>
-              Add a workout
-            </Text>
-            <View style={styles.buttons}>
-              <TouchableOpacity style={gs.redButton} onPress={this.clear}>
-                <Text style={gs.redButtonText}>
-                  Reset
-                </Text>
-              </TouchableOpacity>
-              <View style={styles.smallSpace} />
-              <TouchableOpacity style={gs.button} onPress={this.submit}>
-                <Text style={gs.buttonText}>
-                  Save
-                </Text>
-              </TouchableOpacity>
+        <View>
+          <View style={gs.pageContainer}>
+            <View style={[gs.pageHeaderBox, styles.pageHeaderBox]}>
+              <Text style={gs.pageHeader}>
+                Add a workout
+              </Text>
+              <View style={styles.buttons}>
+                <TouchableOpacity style={gs.redButton} onPress={this.clear}>
+                  <Text style={gs.redButtonText}>
+                    Reset
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.smallSpace} />
+                <TouchableOpacity style={gs.button} onPress={this.submit}>
+                  <Text style={gs.buttonText}>
+                    Save
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
           <View style={gs.dividerPink} />
-          <View style={gs.datetimeBox}>
-            <RNDateTimePicker
-              themeVariant="light"
-              mode="datetime"
-              value={this.state.date}
-              onChange={(e, val) => this.updateInputVal(val, 'date')}
-              accentColor={gs.primaryColor}
-              style={gs.datetime}
-            />
+          <View style={gs.card}>
+            <View style={gs.datetimeBox}>
+              <RNDateTimePicker
+                themeVariant="light"
+                mode="datetime"
+                value={this.state.date}
+                onChange={(e, val) => this.updateInputVal(val, 'date')}
+                accentColor={gs.primaryColor}
+                style={gs.datetime}
+              />
+            </View>
+            <View style={[styles.titleCard]}>
+              <TextInput
+                returnKeyType={ "next" }
+                blurOnSubmit={ false }
+                onSubmitEditing={() => {
+                  this.focusNextField('notes');
+                }}
+                ref={ input => {
+                  this.inputs['title'] = input;
+                }}
+                style={[styles.input, styles.title]}
+                onChangeText={(val) => this.updateInputVal(val, 'title')}
+                value={this.state.title}
+                placeholder="Workout title"
+                placeholderTextColor={gs.textSecondaryColor}
+              />
+            </View>
+            <View style={[styles.notesCard]}>
+              <TextInput
+                blurOnSubmit={ false }
+                onSubmitEditing={() => {
+                }}
+                ref={ input => {
+                  this.inputs['notes'] = input;
+                }}
+                style={[styles.input, styles.notes]}
+                onChangeText={(val) => this.updateInputVal(val, 'notes')}
+                value={this.state.notes}
+                multiline={true}
+                placeholder="Notes"
+                placeholderTextColor={gs.textSecondaryColor}
+              />
+            </View>
           </View>
-          <Card containerStyle={[gs.card, styles.titleCard]}>
-            <TextInput
-              returnKeyType={ "next" }
-              blurOnSubmit={ false }
-              onSubmitEditing={() => {
-                this.focusNextField('notes');
-              }}
-              ref={ input => {
-                this.inputs['title'] = input;
-              }}
-              style={[styles.input, styles.title]}
-              onChangeText={(val) => this.updateInputVal(val, 'title')}
-              value={this.state.title}
-              placeholder="Workout title"
-              placeholderTextColor={gs.textSecondaryColor}
-            />
-          </Card>
-          <Card containerStyle={[gs.card, styles.notesCard]}>
-            <TextInput
-              blurOnSubmit={ false }
-              onSubmitEditing={() => {
-              }}
-              ref={ input => {
-                this.inputs['notes'] = input;
-              }}
-              style={[styles.input, styles.notes]}
-              onChangeText={(val) => this.updateInputVal(val, 'notes')}
-              value={this.state.notes}
-              multiline={true}
-              placeholder="Notes"
-              placeholderTextColor={gs.textSecondaryColor}
-            />
-          </Card>
           <View style={gs.dividerPink} />
           {this.state.indices.map((ind) =>
             <View key={ind}>
@@ -167,9 +171,27 @@ class Add extends React.Component {
                <View style={gs.dividerPink} />
             </View>
           )}
-          <View style={gs.icons}>
-            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.addExercise}>
-              <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
+          <View style={[gs.icons, styles.icons]}>
+            {this.state.private ?
+              <TouchableOpacity onPress={() => this.updateInputVal(false, 'private')}>
+                <View style={gs.centerColumnBox}>
+                  <Ionicons name="close-circle-outline" size={30} color={'white'} />
+                  <Text style={styles.privateText}>Private</Text>
+                </View>
+              </TouchableOpacity>
+              :
+              <TouchableOpacity onPress={() => this.updateInputVal(true, 'private')}>
+                <View style={gs.centerColumnBox}>
+                  <Ionicons name="checkmark-circle" size={30} color={'white'} />
+                  <Text style={styles.privateText}>Public</Text>
+                </View>
+              </TouchableOpacity>
+            }
+            <TouchableOpacity onPress={this.addExercise}>
+              <View style={gs.centerColumnBox}>
+                <Ionicons name="add-circle-outline" size={30} color={'white'} />
+                  <Text style={styles.privateText}>Add workout</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -186,6 +208,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 0,
     borderTopWidth: 0,
+  },
+  icons: {
+    alignItems: 'flex-start',
+  },
+  privateText: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: 'white',
+    paddingRight: 5,
   },
   button: {
     borderColor: gs.primaryColor,
@@ -251,6 +282,10 @@ const styles = StyleSheet.create({
   },
   smallSpace: {
     width: 10,
+  },
+  plusCard: {
+    paddingTop: 0,
+    paddingBottom: 0,
   },
 })
 

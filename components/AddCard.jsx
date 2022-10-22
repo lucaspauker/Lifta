@@ -80,7 +80,7 @@ class AddCard extends React.Component {
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
 
     return (
-      <Card containerStyle={[gs.card, styles.card]}>
+      <View style={[gs.card, styles.card]}>
         <View>
           <View style={styles.autocompleteContainer}>
             <Autocomplete
@@ -189,7 +189,7 @@ class AddCard extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-      </Card>
+      </View>
     );
   }
 }
@@ -268,8 +268,8 @@ const styles = StyleSheet.create({
   },
   pmButton: {
     backgroundColor: gs.primaryColor,
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingLeft: 8,
+    paddingRight: 8,
     paddingTop: 11,
     paddingBottom: 11,
   },

@@ -51,38 +51,39 @@ class EditProfile extends React.Component {
     }
     return (
       <ScrollView>
-        <View style={gs.pageContainer}>
-          <View style={gs.pageHeaderBox}>
+        <View>
+          <View style={[gs.card, gs.pageHeaderBox, styles.pageHeaderBox]}>
             <Text style={gs.pageHeader}>
               Edit Profile
             </Text>
-          </View>
-          <View style={gs.dividerPink} />
-          <View style={styles.box}>
-            <Text style={styles.label}>First Name</Text>
-            <TextInput
-              style={[styles.input]}
-              onChangeText={(val) => this.updateInputVal(val, 'firstname')}
-              value={this.state.firstname}
-              placeholder="First Name"
-              placeholderTextColor={gs.textSecondaryColor}
-            />
-          </View>
-          <View style={styles.box}>
-            <Text style={styles.label}>Last Name</Text>
-            <TextInput
-              style={[styles.input]}
-              onChangeText={(val) => this.updateInputVal(val, 'lastname')}
-              value={this.state.lastname}
-              placeholder="Last Name"
-              placeholderTextColor={gs.textSecondaryColor}
-            />
-          </View>
-          <View style={gs.dividerPink} />
-          <View style={gs.icons}>
-            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.submit}>
-              <Ionicons name="save-outline" size={25} color={gs.backgroundColor} />
+            <TouchableOpacity style={gs.button} onPress={this.submit}>
+              <Text style={gs.buttonText}>
+                Save
+              </Text>
             </TouchableOpacity>
+          </View>
+          <View style={gs.dividerPink} />
+          <View style={gs.card}>
+            <View style={styles.box}>
+              <Text style={styles.label}>First Name</Text>
+              <TextInput
+                style={[styles.input]}
+                onChangeText={(val) => this.updateInputVal(val, 'firstname')}
+                value={this.state.firstname}
+                placeholder="First Name"
+                placeholderTextColor={gs.textSecondaryColor}
+              />
+            </View>
+            <View style={styles.box}>
+              <Text style={styles.label}>Last Name</Text>
+              <TextInput
+                style={[styles.input]}
+                onChangeText={(val) => this.updateInputVal(val, 'lastname')}
+                value={this.state.lastname}
+                placeholder="Last Name"
+                placeholderTextColor={gs.textSecondaryColor}
+              />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -107,6 +108,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 10,
     marginRight: 10,
+  },
+  pageHeaderBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 })
 

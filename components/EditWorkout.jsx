@@ -89,56 +89,63 @@ class EditWorkout extends React.Component {
   render() {
     return (
       <KeyboardAwareScrollView keyboardShouldPersistTaps='always'>
-        <View style={gs.pageContainer}>
-          <View style={gs.pageHeaderBox}>
+        <View>
+          <View style={[gs.card, gs.pageHeaderBox, styles.pageHeaderBox]}>
             <Text style={gs.pageHeader}>
               Edit workout
             </Text>
+            <TouchableOpacity style={gs.button} onPress={this.submit}>
+              <Text style={gs.buttonText}>
+                Save
+              </Text>
+            </TouchableOpacity>
           </View>
           <View style={gs.dividerPink} />
-          <View style={gs.datetimeBox}>
-            <RNDateTimePicker
-              themeVariant="light"
-              mode="datetime"
-              value={this.state.date}
-              onChange={(e, val) => this.updateInputVal(val, 'date')}
-              accentColor={gs.primaryColor}
-              style={gs.datetime}
-            />
+          <View style={gs.card}>
+            <View style={gs.datetimeBox}>
+              <RNDateTimePicker
+                themeVariant="light"
+                mode="datetime"
+                value={this.state.date}
+                onChange={(e, val) => this.updateInputVal(val, 'date')}
+                accentColor={gs.primaryColor}
+                style={gs.datetime}
+              />
+            </View>
+            <View style={[styles.titleCard]}>
+              <TextInput
+                returnKeyType={ "next" }
+                blurOnSubmit={ false }
+                onSubmitEditing={() => {
+                  this.focusNextField('notes');
+                }}
+                ref={ input => {
+                  this.inputs['title'] = input;
+                }}
+                style={[styles.input, styles.title]}
+                onChangeText={(val) => this.updateInputVal(val, 'title')}
+                value={this.state.title}
+                placeholder="Workout title"
+                placeholderTextColor={gs.textSecondaryColor}
+              />
+            </View>
+            <View style={[styles.notesCard]}>
+              <TextInput
+                blurOnSubmit={ false }
+                onSubmitEditing={() => {
+                }}
+                ref={ input => {
+                  this.inputs['notes'] = input;
+                }}
+                style={[styles.input, styles.notes]}
+                onChangeText={(val) => this.updateInputVal(val, 'notes')}
+                value={this.state.notes}
+                multiline={true}
+                placeholder="Notes"
+                placeholderTextColor={gs.textSecondaryColor}
+              />
+            </View>
           </View>
-          <Card containerStyle={[gs.card, styles.titleCard]}>
-            <TextInput
-              returnKeyType={ "next" }
-              blurOnSubmit={ false }
-              onSubmitEditing={() => {
-                this.focusNextField('notes');
-              }}
-              ref={ input => {
-                this.inputs['title'] = input;
-              }}
-              style={[styles.input, styles.title]}
-              onChangeText={(val) => this.updateInputVal(val, 'title')}
-              value={this.state.title}
-              placeholder="Workout title"
-              placeholderTextColor={gs.textSecondaryColor}
-            />
-          </Card>
-          <Card containerStyle={[gs.card, styles.notesCard]}>
-            <TextInput
-              blurOnSubmit={ false }
-              onSubmitEditing={() => {
-              }}
-              ref={ input => {
-                this.inputs['notes'] = input;
-              }}
-              style={[styles.input, styles.notes]}
-              onChangeText={(val) => this.updateInputVal(val, 'notes')}
-              value={this.state.notes}
-              multiline={true}
-              placeholder="Notes"
-              placeholderTextColor={gs.textSecondaryColor}
-            />
-          </Card>
           <View style={gs.dividerPink} />
           {this.state.indices.map((ind) =>
             <View key={ind}>
@@ -147,13 +154,8 @@ class EditWorkout extends React.Component {
             </View>
           )}
           <View style={gs.icons}>
-            <TouchableOpacity style={[gs.card, gs.plusCard]} onPress={this.addExercise}>
-              <Ionicons name="add-circle-outline" size={30} color={gs.backgroundColor} />
-            </TouchableOpacity>
-            <TouchableOpacity style={[gs.button, styles.button]} onPress={this.submit}>
-              <Text style={[gs.buttonText, styles.buttonText]}>
-                Save
-              </Text>
+            <TouchableOpacity onPress={this.addExercise}>
+              <Ionicons name="add-circle-outline" size={30} color={'white'} />
             </TouchableOpacity>
           </View>
         </View>
@@ -204,6 +206,12 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: gs.primaryColor,
+  },
+  pageHeaderBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 })
 

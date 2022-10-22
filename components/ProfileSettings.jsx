@@ -59,24 +59,26 @@ class ProfileSettings extends React.Component {
     return (
       <ScrollView>
         <View style={gs.dividerPink} />
-        <View style={gs.pageContainer}>
-          <View style={styles.profileText}>
-            <View style={styles.header}>
-              <Text style={gs.pageHeader}>
-                {this.state.firstname + " " + this.state.lastname}
-              </Text>
-              <Text style={[gs.pageHeader, styles.userName]}>
-                @{this.state.username}
+        <View>
+          <View style={gs.card}>
+            <View style={styles.profileText}>
+              <View style={styles.header}>
+                <Text style={gs.pageHeader}>
+                  {this.state.firstname + " " + this.state.lastname}
+                </Text>
+                <Text style={[gs.pageHeader, styles.userName]}>
+                  @{this.state.username}
+                </Text>
+              </View>
+              <Text style={[styles.email]}>
+                {this.state.email}
               </Text>
             </View>
-            <Text style={[styles.email]}>
-              {this.state.email}
-            </Text>
           </View>
           <View style={gs.dividerPink} />
           <View style={gs.icons}>
-            <TouchableOpacity style={[gs.card, styles.plusCard]} onPress={this.editProfile}>
-              <Ionicons name="create-outline" size={30} color={gs.backgroundColor} />
+            <TouchableOpacity onPress={this.editProfile}>
+              <Ionicons name="create-outline" size={30} color={'white'} />
             </TouchableOpacity>
             <TouchableOpacity style={[gs.button, styles.button]} onPress={this.signOut}>
               <Text style={[gs.buttonText, styles.buttonText]}>
@@ -126,10 +128,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    borderColor: gs.primaryColor,
+    borderColor: 'white',
   },
   buttonText: {
-    color: gs.primaryColor,
+    color: 'white',
   },
 })
 

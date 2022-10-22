@@ -75,12 +75,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     borderBottomWidth: 1,
     borderColor: gs.primaryColor,
+    borderRadius: 10,
+    marginBottom: 0,
   },
   tab: {
     fontSize: 10,
     margin: 0,
     padding: 0,
-    paddingTop: 5,
+    paddingTop: 0,
     borderWidth: 0,
   },
 })

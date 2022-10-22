@@ -9,92 +9,7 @@ import {convertTimestamp} from './utils.js';
 import gs from './globalStyles.js';
 import Loading from './Loading';
 import FeedCard from './FeedCard';
-
-class CommentBox extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userId: this.props.userId,
-      text: this.props.text,
-      timestamp: this.props.timestamp,
-      commentId: this.props.commentId,
-      username: '',
-      firstname: '',
-      lastname: '',
-      isLoading: true,
-    }
-  }
-
-  deleteComment = () => {
-    this.setState({isLoading: true});
-    deleteDoc(doc(db, "comments", this.state.commentId)).then(() => {
-      this.props.reload();
-    });
-  }
-
-  componentDidMount() {
-    getDoc(doc(db, "users", this.props.userId)).then((res) => {
-      if (res.data()) {
-        this.setState({username: res.data().username, firstname: res.data().firstname, lastname: res.data().lastname, isLoading: false});
-      }
-    });
-  }
-
-  render() {
-    if (this.state.isLoading) {
-      return (
-        <View>
-          <View style={gs.dividerMedium} />
-          <View style={gs.dividerLight} />
-          <View style={styles.commentBox}>
-            <View>
-              <View style={[styles.commentTitleBox, styles.spaceBottom]}>
-                <Text style={[{fontWeight: 'bold'}, gs.greyedOutText]}>
-                  ........................
-                </Text>
-                <Text style={[gs.subtitle, styles.subtitle, styles.spaceLeft, gs.greyedOutText]}>
-                  .....................
-                </Text>
-              </View>
-              <Text style={[styles.commentText, gs.greyedOutText]}>
-                ...........................................................
-              </Text>
-            </View>
-            {this.state.userId === auth.currentUser.uid ?
-              <TouchableOpacity onPress={() => {this.deleteComment()}}>
-                <Ionicons name="trash-outline" size={16} color={gs.backgroundColor} />
-              </TouchableOpacity>
-              :
-              ''
-            }
-          </View>
-        </View>
-      );
-    }
-    return (
-      <View>
-        <View style={gs.dividerMedium} />
-        <View style={gs.dividerLight} />
-        <View style={styles.commentBox}>
-          <View>
-            <View style={styles.commentTitleBox}>
-              <Text style={{fontWeight: 'bold'}}>{this.state.firstname + " " + this.state.lastname + "  "}</Text>
-              <Text style={gs.subtitle}>{convertTimestamp(this.state.timestamp)}</Text>
-            </View>
-            <Text style={styles.commentText}>{this.state.text}</Text>
-          </View>
-          {this.state.userId === auth.currentUser.uid ?
-            <TouchableOpacity onPress={() => {this.deleteComment()}}>
-              <Ionicons name="trash-outline" size={16} color={gs.backgroundColor} />
-            </TouchableOpacity>
-            :
-            ''
-          }
-        </View>
-      </View>
-    );
-  }
-}
+import CommentBox from './CommentBox';
 
 class WorkoutPage extends React.Component {
   constructor(props) {
@@ -187,7 +102,7 @@ class WorkoutPage extends React.Component {
       <ScrollView>
         <FeedCard item={this.state.item} reload={this.reload} navigation={this.props.navigation} isFocused={true}/>
         <View>
-          <View style={gs.pageContainer}>
+          <View style={[gs.card, gs.curvedContainer]}>
             <View style={styles.inputComment}>
               <TextInput
                 returnKeyType={ "done" }
@@ -206,10 +121,10 @@ class WorkoutPage extends React.Component {
                 </Text>
               </TouchableOpacity>
             </View>
+            {this.state.comments.map((item, i) => (
+              <CommentBox key={item.key} text={item.text} timestamp={item.timestamp} userId={item.userId} commentId={item.key} reload={this.reloadComments} isFocused={true}/>
+            ))}
           </View>
-          {this.state.comments.map((item, i) => (
-            <CommentBox key={item.key} text={item.text} timestamp={item.timestamp} userId={item.userId} commentId={item.key} reload={this.reloadComments}/>
-          ))}
         </View>
       </ScrollView>
     );
@@ -233,6 +148,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 5,
     marginBottom: 5,
   },
   commentBox: {
