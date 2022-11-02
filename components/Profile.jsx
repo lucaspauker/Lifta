@@ -14,7 +14,6 @@ import gs from './globalStyles.js';
 import {toTitleCase, convertTimestamp, formatBigNumber} from './utils.js';
 import Loading from './Loading';
 import ProfileCard from './ProfileCard';
-import Analytics from './Analytics';
 import ProfileWorkouts from './ProfileWorkouts';
 import ProfileSettings from './ProfileSettings';
 
@@ -24,10 +23,10 @@ const renderTabBar = props => (
   <TabBar
     {...props}
     indicatorStyle={{
-      backgroundColor: gs.secondaryColor,
-      height: 2,
-      marginBottom: 4,
-      width: totalWidth/3 - 40,
+      backgroundColor: gs.secondaryColorLight,
+      height: 3,
+      marginBottom: 0,
+      width: totalWidth/2 - 40,
       left: 20,
     }}
     style={styles.tabbar}
@@ -35,7 +34,7 @@ const renderTabBar = props => (
     activeColor={gs.secondaryColor}
     inactiveColor={gs.textSecondaryColor}
     renderLabel={({ route, focused, color }) => (
-      <Text style={gs.pageHeader}>
+      <Text style={[gs.pageHeader, styles.pageHeader]}>
         {route.title}
       </Text>
     )}
@@ -43,9 +42,8 @@ const renderTabBar = props => (
 );
 
 function Profile({route, navigation}) {
-  const [index, setIndex] = React.useState(1);
+  const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'first', title: 'Analytics' },
     { key: 'second', title: 'Workouts' },
     { key: 'third', title: 'Profile' },
   ]);
@@ -56,7 +54,6 @@ function Profile({route, navigation}) {
       navigationState={{ index, routes }}
       renderScene={
           SceneMap({
-            first: () => <Analytics navigation={navigation}/>,
             second: () => <ProfileWorkouts navigation={navigation}/>,
             third: () => <ProfileSettings navigation={navigation} params={route.params}/>,
           })
@@ -70,10 +67,10 @@ function Profile({route, navigation}) {
 
 const styles = StyleSheet.create({
   tabbar: {
-    backgroundColor: gs.lightBackgroundColor,
+    backgroundColor: gs.primaryColor,
     elevation: 0,
     shadowOpacity: 0,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0,
     borderColor: gs.primaryColor,
     borderRadius: 10,
     marginBottom: 0,
@@ -84,6 +81,12 @@ const styles = StyleSheet.create({
     padding: 0,
     paddingTop: 0,
     borderWidth: 0,
+  },
+  pageHeader: {
+    color: gs.secondaryColorLight,
+    fontSize: 24,
+    marginTop: 0,
+    marginBottom: 10,
   },
 })
 

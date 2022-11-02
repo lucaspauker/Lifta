@@ -52,7 +52,7 @@ class EditProfile extends React.Component {
     return (
       <ScrollView>
         <View>
-          <View style={[gs.card, gs.pageHeaderBox, styles.pageHeaderBox]}>
+          <View style={[gs.pageHeaderBox, styles.pageHeaderBox]}>
             <Text style={gs.pageHeader}>
               Edit Profile
             </Text>
@@ -65,22 +65,22 @@ class EditProfile extends React.Component {
           <View style={gs.dividerPink} />
           <View style={gs.card}>
             <View style={styles.box}>
-              <Text style={styles.label}>First Name</Text>
+              <Text style={styles.label}>First name</Text>
               <TextInput
                 style={[styles.input]}
                 onChangeText={(val) => this.updateInputVal(val, 'firstname')}
                 value={this.state.firstname}
-                placeholder="First Name"
+                placeholder="First name"
                 placeholderTextColor={gs.textSecondaryColor}
               />
             </View>
             <View style={styles.box}>
-              <Text style={styles.label}>Last Name</Text>
+              <Text style={styles.label}>Last name</Text>
               <TextInput
                 style={[styles.input]}
                 onChangeText={(val) => this.updateInputVal(val, 'lastname')}
                 value={this.state.lastname}
-                placeholder="Last Name"
+                placeholder="Last name"
                 placeholderTextColor={gs.textSecondaryColor}
               />
             </View>

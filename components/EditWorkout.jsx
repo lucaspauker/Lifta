@@ -1,9 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
+import { Keyboard, TouchableOpacity, ScrollView, StyleSheet, Text, View, TextInput } from 'react-native';
 import {Card, Button} from "@rneui/base";
 import { db, auth } from '../database/firebase';
 import { updateDoc, doc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
@@ -17,6 +18,7 @@ class EditWorkout extends React.Component {
     const len = Object.keys(data).length;
     console.log(this.props.route.params.item.timestamp);
     this.state = {
+      showKeyboardDown: false,
       id: this.props.route.params.id,
       data: data,
       title: this.props.route.params.item.title,
@@ -24,6 +26,7 @@ class EditWorkout extends React.Component {
       indices: Object.keys(data),
       lastIndex: len,
       date: new Date(this.props.route.params.item.timestamp),
+      private: false,
     };
     console.log(this.state.indices);
     this.inputs = {};
@@ -90,7 +93,7 @@ class EditWorkout extends React.Component {
     return (
       <KeyboardAwareScrollView keyboardShouldPersistTaps='always'>
         <View>
-          <View style={[gs.card, gs.pageHeaderBox, styles.pageHeaderBox]}>
+          <View style={[gs.pageHeaderBox, styles.pageHeaderBox]}>
             <Text style={gs.pageHeader}>
               Edit workout
             </Text>
@@ -130,8 +133,17 @@ class EditWorkout extends React.Component {
               />
             </View>
             <View style={[styles.notesCard]}>
+              <View style={styles.keyboardDismiss}>
+                {this.state.showKeyboardDown ?
+                  <TouchableOpacity onPress={() => Keyboard.dismiss()}>
+                    <Icon name="keyboard-hide" size={25} color={gs.lightGreyColor} />
+                  </TouchableOpacity>
+                :""}
+              </View>
               <TextInput
                 blurOnSubmit={ false }
+                onFocus={() => this.updateInputVal(true, 'showKeyboardDown')}
+                onBlur={() => this.updateInputVal(false, 'showKeyboardDown')}
                 onSubmitEditing={() => {
                 }}
                 ref={ input => {
@@ -153,9 +165,27 @@ class EditWorkout extends React.Component {
                <View style={gs.dividerPink} />
             </View>
           )}
-          <View style={gs.icons}>
+          <View style={[gs.icons, styles.icons]}>
+            {this.state.private ?
+              <TouchableOpacity onPress={() => this.updateInputVal(false, 'private')}>
+                <View style={gs.centerColumnBox}>
+                  <Ionicons name="close-circle-outline" size={30} color={'white'} />
+                  <Text style={styles.privateText}>Private</Text>
+                </View>
+              </TouchableOpacity>
+              :
+              <TouchableOpacity onPress={() => this.updateInputVal(true, 'private')}>
+                <View style={gs.centerColumnBox}>
+                  <Ionicons name="checkmark-circle" size={30} color={'white'} />
+                  <Text style={styles.privateText}>Public</Text>
+                </View>
+              </TouchableOpacity>
+            }
             <TouchableOpacity onPress={this.addExercise}>
-              <Ionicons name="add-circle-outline" size={30} color={'white'} />
+              <View style={gs.centerColumnBox}>
+                <Ionicons name="add-circle-outline" size={30} color={'white'} />
+                <Text style={styles.privateText}>Add card</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -212,6 +242,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  keyboardDismiss: {
+    position: 'absolute',
+    right: 5,
+    top: 5,
+    zIndex: 1,
+  },
+  privateText: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: 'white',
+    paddingRight: 5,
   },
 })
 

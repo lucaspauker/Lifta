@@ -32,6 +32,7 @@ class UserPage extends React.Component {
       let lbLifted = 0;
       res.forEach((item) => {
         let id = item.data();
+        if (id["private"]) return;
         id["key"] = String(item._key).split('/')[1];
         data.push(id);
       });

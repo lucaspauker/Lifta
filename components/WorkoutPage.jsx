@@ -115,8 +115,8 @@ class WorkoutPage extends React.Component {
                 placeholder="Add a comment..."
                 placeholderTextColor={gs.textSecondaryColor}
               />
-              <TouchableOpacity style={[gs.button, styles.button]} onPress={this.submitComment}>
-                <Text style={gs.buttonText}>
+              <TouchableOpacity style={[gs.blueButton, styles.button]} onPress={this.submitComment}>
+                <Text style={gs.blueButtonText}>
                   Submit
                 </Text>
               </TouchableOpacity>
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width - 80 - 5,
   },
   button: {
-    width: 80,
     marginRight: 5,
   },
   inputComment: {
