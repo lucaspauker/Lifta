@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -38,6 +38,7 @@ import {
 
 import Feed from './components/Feed';
 //import Search from './Search';
+import Analytics from './components/Analytics';
 import Add from './components/Add';
 import Splash from './components/Splash';
 import Signup from './components/Signup';
@@ -52,22 +53,35 @@ import gs from './components/globalStyles.js';
 
 const Tab = createBottomTabNavigator();
 
-function Title() {
+function Title(props) {
   return (
-    <View style={styles.title}>
-      <Text style={[gs.smallHeader, gs.smallNoRightLetter]}>
-        L
-      </Text>
-      <Ionicons name="barbell-outline" size={18} style={gs.smallBarbell}/>
-      <Text style={[gs.smallHeader, gs.smallNoLeftLetter]}>
-        F
-      </Text>
-      <Text style={[gs.smallHeader, gs.smallNormalLetter]}>
-        T
-      </Text>
-      <Text style={[gs.smallHeader, gs.smallNormalLetter]}>
-        A
-      </Text>
+    <View style={gs.titleBox}>
+      <View style={styles.title}>
+        <Text style={[gs.smallHeader, gs.smallNoRightLetter]}>
+          L
+        </Text>
+        <Ionicons name="barbell-outline" size={18} style={gs.smallBarbell}/>
+        <Text style={[gs.smallHeader, gs.smallNoLeftLetter]}>
+          F
+        </Text>
+        <Text style={[gs.smallHeader, gs.smallNormalLetter]}>
+          T
+        </Text>
+        <Text style={[gs.smallHeader, gs.smallNormalLetter]}>
+          A
+        </Text>
+        {props.title && props.title === "nalytics" ? '' :
+          <View style={{width: 8}} />
+        }
+        {props.title ? props.title.split("").map((letter) =>
+          <Text style={[gs.smallHeader, gs.smallNormalLetter]}>
+            {letter.toUpperCase()}
+          </Text>
+        ) : ''}
+      </View>
+      <TouchableOpacity onPress={() => props.navigation.navigate('Add')}>
+        <Ionicons name="add-outline" size={30} color={'white'} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -80,7 +94,7 @@ const screenOptions = () => ({
 });
 
 const FeedStack = createStackNavigator();
-function FeedNavigator() {
+function FeedNavigator(props) {
   return (
     <FeedStack.Navigator
       initialRouteName="Feed"
@@ -102,21 +116,23 @@ function FeedNavigator() {
         name="Feed"
         component={Feed}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          headerTitle: () => <Title navigation={props.navigation} title={"feed"}/>,
         }}
       />
       <FeedStack.Screen
         name="UserPage"
         component={UserPage}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          title: '',
+          headerBackTitle: 'Back',
         }}
       />
       <FeedStack.Screen
         name="Workout"
         component={WorkoutPage}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          title: '',
+          headerBackTitle: 'Back',
         }}
       />
     </FeedStack.Navigator>
@@ -124,7 +140,7 @@ function FeedNavigator() {
 }
 
 const ProfileStack = createStackNavigator();
-function ProfileNavigator() {
+function ProfileNavigator(props) {
   return (
     <ProfileStack.Navigator
       initialRouteName="Profile"
@@ -146,38 +162,41 @@ function ProfileNavigator() {
         name="Profile"
         component={Profile}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          headerTitle: () => <Title navigation={props.navigation} title="profile"/>,
         }}
       />
       <ProfileStack.Screen
         name="EditWorkout"
         component={EditWorkout}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          title: '',
+          headerBackTitle: 'Back',
         }}
       />
       <ProfileStack.Screen
         name="EditProfile"
         component={EditProfile}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          title: '',
+          headerBackTitle: 'Back',
         }}
       />
       <FeedStack.Screen
         name="Workout"
         component={WorkoutPage}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          title: '',
+          headerBackTitle: 'Back',
         }}
       />
     </ProfileStack.Navigator>
   );
 }
 
-function Home() {
+function Home(props) {
   return (
     <Tab.Navigator
-      initialRouteName="Add"
+      initialRouteName="Feed"
       screenOptions={({ route }) => ({
         headerStyle: {
           backgroundColor: gs.backgroundColor,
@@ -191,9 +210,11 @@ function Home() {
           let iconName;
 
           if (route.name === 'Feed') {
-            iconName = focused ? 'list' : 'list-outline';
+            iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Add') {
             iconName = focused ? 'add-circle' : 'add-circle-outline';
+          } else if (route.name === 'Analytics') {
+            iconName = focused ? 'rocket' : 'rocket-outline';
           } else if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
           } else if (route.name === 'Profile') {
@@ -214,22 +235,22 @@ function Home() {
     >
       <Tab.Screen
         name="Feed"
-        component={FeedNavigator}
+        children={() => <FeedNavigator navigation={props.navigation} />}
         options={{ unmountOnBlur: true, headerShown: false }}
         listeners={({ navigation }) => ({
           blur: () => navigation.setParams({ screen: undefined }),
         })}
       />
       <Tab.Screen
-        name="Add"
-        component={Add}
+        name="Analytics"
+        children={() => <Analytics navigation={props.navigation} />}
         options={{
-          headerTitle: (props) => <Title {...props} />,
+          headerTitle: () => <Title navigation={props.navigation} title="nalytics"/>,
         }}
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileNavigator}
+        children={() => <ProfileNavigator navigation={props.navigation} />}
         options={{ unmountOnBlur: true, headerShown: false }}
         listeners={({ navigation }) => ({
           blur: () => navigation.setParams({ screen: undefined }),
@@ -249,7 +270,7 @@ const MyTheme = {
 
 const Stack = createStackNavigator();
 
-export default function App() {
+export default function App({navigation}) {
   let [fontsLoaded] = useFonts({
     Oswald_400Regular,
     Oswald_500Medium,
@@ -279,12 +300,24 @@ export default function App() {
             headerTitleAlign: 'center',
             headerStyle: {
               backgroundColor: gs.backgroundColor,
+              elevation: 0,
+              shadowOffset: {
+                width: 0, height: 0
+              },
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
               fontWeight: 'bold',
             },
           }}>
+          <Stack.Screen
+            name="Add"
+            component={Add}
+            options={{
+              title: '',
+              headerBackTitle: 'Back',
+            }}
+          />
           <Stack.Screen
             name="Signup"
             component={Signup}

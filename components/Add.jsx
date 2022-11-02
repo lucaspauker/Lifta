@@ -5,6 +5,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { db, auth } from '../database/firebase';
 import { doc, collection, addDoc } from 'firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 import gs from './globalStyles.js';
@@ -17,6 +18,7 @@ class Add extends React.Component {
       data: {},
       indices: [0],
       lastIndex: 0,
+      showKeyboardDown: false,
       title: '',
       notes: '',
       date: new Date(),
@@ -58,6 +60,7 @@ class Add extends React.Component {
       title: title,
       user: auth.currentUser.uid,
       notes: this.state.notes,
+      private: this.state.private,
       datetime: this.state.date.toString(),
       timestamp: this.state.date.getTime(),
     }).then(() => {
@@ -65,6 +68,7 @@ class Add extends React.Component {
         data: {},
         notes: '',
         title: '',
+        private: false,
         indices: [this.state.lastIndex + 1],
         lastIndex: this.state.lastIndex + 1,
         Date: new Date(),
@@ -147,11 +151,19 @@ class Add extends React.Component {
                 placeholderTextColor={gs.textSecondaryColor}
               />
             </View>
-            <View style={[styles.notesCard]}>
+            <View style={styles.notesCard}>
+              <View style={styles.keyboardDismiss}>
+                {this.state.showKeyboardDown ?
+                  <TouchableOpacity onPress={() => Keyboard.dismiss()}>
+                    <Icon name="keyboard-hide" size={25} color={gs.lightGreyColor} />
+                  </TouchableOpacity>
+                :""}
+              </View>
               <TextInput
                 blurOnSubmit={ false }
-                onSubmitEditing={() => {
-                }}
+                onFocus={() => this.updateInputVal(true, 'showKeyboardDown')}
+                onBlur={() => this.updateInputVal(false, 'showKeyboardDown')}
+                onSubmitEditing={() => {}}
                 ref={ input => {
                   this.inputs['notes'] = input;
                 }}
@@ -190,7 +202,7 @@ class Add extends React.Component {
             <TouchableOpacity onPress={this.addExercise}>
               <View style={gs.centerColumnBox}>
                 <Ionicons name="add-circle-outline" size={30} color={'white'} />
-                  <Text style={styles.privateText}>Add workout</Text>
+                <Text style={styles.privateText}>Add card</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -260,7 +272,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   notes: {
-    height: 50,
+    height: 60,
     borderWidth: 0,
   },
   clearButton: {
@@ -286,6 +298,12 @@ const styles = StyleSheet.create({
   plusCard: {
     paddingTop: 0,
     paddingBottom: 0,
+  },
+  keyboardDismiss: {
+    position: 'absolute',
+    right: 5,
+    top: 5,
+    zIndex: 1,
   },
 })
 

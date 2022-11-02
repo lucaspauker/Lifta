@@ -41,6 +41,7 @@ class Feed extends React.Component {
       let lbLifted = 0;
       res.forEach((item) => {
         let id = item.data();
+        if (id["private"]) return;
         id["key"] = String(item._key).split('/')[1];
         data.push(id);
       });
@@ -57,6 +58,7 @@ class Feed extends React.Component {
       let lbLifted = 0;
       res.forEach((item) => {
         let id = item.data();
+        if (id["private"]) return;
         id["key"] = String(item._key).split('/')[1];
         data.push(id);
       });
@@ -102,18 +104,6 @@ class Feed extends React.Component {
               onRefresh={this.onRefresh}
               tintColor='white'
             />}
-          ListHeaderComponent={
-            <>
-            <View style={gs.pageContainer}>
-              <View style={gs.pageHeaderBox}>
-                <Text style={gs.pageHeader}>
-                  Global feed
-                </Text>
-              </View>
-            </View>
-            <View style={gs.dividerPinkThick} />
-            </>
-          }
           data={this.state.data}
           renderItem={(item, i) => (
             <FeedCard

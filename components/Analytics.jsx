@@ -94,13 +94,14 @@ class Analytics extends React.Component {
         let workout = [...workouts][i];
         let keys = Object.keys(workoutDictionary[workout]);
         for (let j=0; j<keys.length; j++) {
+          // Sort by timestamp
           workoutDictionary[workout][keys[j]].sort((a, b) => a[1] - b[1]);
         }
       }
       workouts = [...workouts];
       workouts.sort()
       let firstKeys = Object.keys(workoutDictionary[workouts[0]]);
-      firstKeys.sort();
+      firstKeys.sort((a, b) => workoutDictionary[workouts[0]][b].length - workoutDictionary[workouts[0]][a].length);
       let currentWorkout = workouts[0];
       data.sort((a, b) => b.timestamp - a.timestamp);
       this.setState({
@@ -137,7 +138,7 @@ class Analytics extends React.Component {
     state[prop] = val;
     if (prop === 'currentWorkout') {
       let firstKeys = Object.keys(this.state.workoutDictionary[val]);
-      firstKeys.sort((a, b) => parseInt(a.split('x')[0]) - parseInt(b.split('x')[0]));
+      firstKeys.sort((a, b) => this.state.workoutDictionary[val][b].length - this.state.workoutDictionary[val][a].length);
       this.setState({currentSetsReps: firstKeys[0]}, this.setState(state));
     } else {
       this.setState(state);
@@ -152,7 +153,7 @@ class Analytics extends React.Component {
     }
     let workouts = this.state.workouts;
     let workoutSetsReps = Object.keys(this.state.workoutDictionary[this.state.currentWorkout]);
-    workoutSetsReps.sort((a, b) => parseInt(a.split('x')[0]) - parseInt(b.split('x')[0]));
+    workoutSetsReps.sort((a, b) => this.state.workoutDictionary[this.state.currentWorkout][b].length - this.state.workoutDictionary[this.state.currentWorkout][a].length);
     let workoutData = this.state.workoutDictionary[this.state.currentWorkout][this.state.currentSetsReps];
     let workoutDates = [];
     let workoutWeights = [];
@@ -183,6 +184,10 @@ class Analytics extends React.Component {
     };
     return (
       <ScrollView
+        style={{
+          marginLeft: 10,
+          marginRight: 10,
+        }}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
@@ -192,14 +197,13 @@ class Analytics extends React.Component {
         }>
         <View style={gs.dividerPink} />
         <View>
-          <View style={[gs.labelBox, styles.labelBox]}>
-            <Text style={styles.topLabel}>Pounds lifted over the past week:</Text>
+          <View style={[gs.labelBox, styles.labelBox, styles.headerBox]}>
+            <Text style={styles.topLabel}>Pounds lifted over the past week</Text>
           </View>
-          <View style={gs.dividerPink} />
           <View style={styles.chart}>
             <LineChart
               data={lastWeekData}
-              width={Dimensions.get("window").width - 10}
+              width={Dimensions.get("window").width - 20}
               height={220}
               yAxisSuffix=" lb"
               yAxisInterval={1}
@@ -235,12 +239,13 @@ class Analytics extends React.Component {
           </View>
           <View style={gs.dividerPink} />
           <View style={gs.dividerPink} />
+          <View style={gs.dividerPink} />
           <View style={gs.curvedContainer}>
-            <View style={styles.labelBox}>
-              <Text style={styles.topLabel}>Graphs for specific workouts:</Text>
+            <View style={[gs.labelBox, styles.labelBox, styles.headerBox]}>
+              <Text style={styles.topLabel}>Graphs for specific workouts</Text>
             </View>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontal}>
-              <View style={gs.labelBox}>
+            <View>
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontal}>
                 {workouts.map((item, i) => (
                   <TouchableOpacity key={i} onPress={() => this.updateInputVal(item, 'currentWorkout')}>
                     <View style={this.state.currentWorkout === item ? gs.darkCircleLabel : gs.circleLabel}>
@@ -248,10 +253,10 @@ class Analytics extends React.Component {
                     </View>
                   </TouchableOpacity>
                 ))}
-              </View>
-            </ScrollView>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontal}>
-              <View style={gs.labelBox}>
+              </ScrollView>
+            </View>
+            <View>
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontal}>
                 {workoutSetsReps.map((item, i) => (
                   <TouchableOpacity key={i} onPress={() => this.updateInputVal(item, 'currentSetsReps')}>
                     <View style={this.state.currentSetsReps === item ? gs.darkCircleLabel : gs.circleLabel}>
@@ -259,15 +264,14 @@ class Analytics extends React.Component {
                     </View>
                   </TouchableOpacity>
                 ))}
-              </View>
-            </ScrollView>
+              </ScrollView>
+            </View>
           </View>
-          <View style={gs.dividerPink} />
         </View>
         <View style={styles.chart}>
           <LineChart
             data={data}
-            width={Dimensions.get("window").width - 10}
+            width={Dimensions.get("window").width - 20}
             height={220}
             yAxisSuffix=" lb"
             yAxisInterval={1}
@@ -300,15 +304,14 @@ class Analytics extends React.Component {
 
 const styles = StyleSheet.create({
   chart: {
-    marginLeft: 5,
-    marginRight: 5,
   },
   pageContainer: {
     backgroundColor: gs.primaryColor,
     paddingTop: 0,
   },
   labelBox: {
-    padding: 5,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   topLabel: {
     color: 'white',
@@ -318,6 +321,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   horizontal: {
+  },
+  headerBox: {
+    justifyContent: 'center',
   },
 })
 
